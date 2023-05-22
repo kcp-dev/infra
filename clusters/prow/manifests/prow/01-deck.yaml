@@ -171,7 +171,7 @@ spec:
                   name: deck-oauth-app
                   key: cookieSecret
             - name: OAUTH2_PROXY_COOKIE_DOMAIN
-              value: '__PROW_DECK_DOMAIN__'
+              value: 'prow.kcp.k8c.io'
             - name: OAUTH2_PROXY_COOKIE_NAME
               value: deck-kcp-k8c-io-oauth2-proxy
             - name: OAUTH2_PROXY_COOKIE_SAMESITE
@@ -240,10 +240,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - '__PROW_DECK_DOMAIN__'
+        - 'prow.kcp.k8c.io'
       secretName: deck-tls
   rules:
-    - host: '__PROW_DECK_DOMAIN__'
+    - host: 'prow.kcp.k8c.io'
       http:
         paths:
           - path: /

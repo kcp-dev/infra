@@ -178,10 +178,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - '__PROW_HOOK_DOMAIN__'
+        - 'prow.kcp.k8c.io'
       secretName: hook-tls
   rules:
-    - host: '__PROW_HOOK_DOMAIN__'
+    - host: 'prow.kcp.k8c.io'
       http:
         paths:
           - path: /hook
