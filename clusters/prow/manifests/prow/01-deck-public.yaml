@@ -204,16 +204,16 @@ metadata:
 spec:
   tls:
     - hosts:
-        - '__PROW_DECK_PUBLIC_DOMAIN__'
+        - 'public-prow.kcp.k8c.io'
       secretName: deck-public-tls
   rules:
-    - host: '__PROW_DECK_PUBLIC_DOMAIN__'
+    - host: 'public-prow.kcp.k8c.io'
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: deck
+                name: deck-public
                 port:
                   number: 80
