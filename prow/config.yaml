@@ -1,0 +1,202 @@
+prowjob_namespace: "__PROW_NAMESPACE__"
+pod_namespace: "__PROW_TESTPOD_NAMESPACE__"
+# log_level: debug
+
+# If a repository contains open source code, consider adding it to
+# plank.report_templates, plank.job_url_prefix_config and plank.default_decoration_config_entries
+# to generate links to __PROW_DECK_PUBLIC_DOMAIN__, which does not require
+# authentication.
+
+plank:
+  pod_pending_timeout: 60m
+  pod_unscheduled_timeout: 60m
+
+  report_templates:
+    '*': '[Full PR test history](https://__PROW_DECK_DOMAIN__/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
+    'kcp-dev/kcp': '[Full PR test history](https://__PROW_DECK_PUBLIC_DOMAIN__/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
+
+  job_url_prefix_config:
+    '*': https://__PROW_DECK_DOMAIN__/view/
+    'kcp-dev/kcp': https://__PROW_DECK_PUBLIC_DOMAIN__/view/
+
+  default_decoration_config_entries:
+    # default config
+    - config:
+        timeout: 2h
+        grace_period: 5m
+        utility_images:
+          clonerefs: "gcr.io/k8s-prow/clonerefs:v20230518-c802d8aea4"
+          initupload: "gcr.io/k8s-prow/initupload:v20230518-c802d8aea4"
+          entrypoint: "gcr.io/k8s-prow/entrypoint:v20230518-c802d8aea4"
+          sidecar: "gcr.io/k8s-prow/sidecar:v20230518-c802d8aea4"
+        gcs_configuration:
+          bucket: "s3://prow-data"
+          path_strategy: "explicit"
+        s3_credentials_secret: "s3-credentials-internal"
+        ssh_host_fingerprints:
+          - github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
+
+    - repo: "kcp-dev/kcp"
+      config:
+        s3_credentials_secret: "s3-credentials-public"
+        gcs_configuration:
+          bucket: "s3://prow-public-data"
+
+in_repo_config:
+  enabled:
+    '*': true
+
+sinker:
+  # How often sinker resyncs, defaults to 1h
+  resync_period: 1m
+  # How long build pods are kept after finishing, defaults to 24h
+  max_pod_age: 2h
+  # How long to keep ProwJob CRs, default is one week,
+  # we increase it to 28 days and have a jobarchiver CronJob that
+  # will move jobs older than 21d to another namespace.
+  max_prowjob_age: 672h
+
+deck:
+  # repositories hidden in public-prow, but internal prow ignores this list and shows all repos
+  hidden_repos: []
+  rerun_auth_configs:
+    '*':
+      allow_anyone: true
+  spyglass:
+    # # Configuring these will make an "Artifacts" link appear on the Spyglass page, linking
+    # # to gcsweb.
+    # gcs_browser_prefixes:
+    #   '*': https://__GCSWEB_DOMAIN__/gcs/
+    #   'kcp-dev/kcp': https://__GCSWEB_PUBLIC_DOMAIN__/gcs/
+    # # required so that public periodics can point to the correct gcsweb
+    # # otherwise, gcsweb-public will just redirect to Google Cloud Console
+    # # instead of showing artifacts
+    # gcs_browser_prefixes_by_bucket:
+    #   '*': https://__GCSWEB_DOMAIN__/gcs/
+    #   'prow-data': https://__GCSWEB_DOMAIN__/gcs/
+    #   'prow-public-data': https://__GCSWEB_PUBLIC_DOMAIN__/gcs/
+    lenses:
+      - required_files:
+          - started.json
+        optional_files:
+          - finished.json
+        lens:
+          name: metadata
+      - required_files:
+          - build-log.txt
+        lens:
+          name: buildlog
+          config:
+            highlight_regexes:
+              - timed out
+              - 'ERROR'
+              - (FAIL|Failure \[)\b
+              - panic\b
+              - ^E\d{4} \d\d:\d\d:\d\d\.\d\d\d]
+              - unbound variable
+              - no more retries left\.
+              - ^Retry [0-9]+\/[0-9]+ exited [^0], retrying in [0-9]+ seconds
+              - npm ERR!
+              - 'WARNING: DATA RACE'
+      - required_files:
+          - artifacts/junit.*\.xml
+        lens:
+          name: junit
+    size_limit: 500000000 # 500MB
+
+github_reporter:
+  job_types_to_report:
+    - presubmit
+    - postsubmit
+
+tide:
+  pr_status_base_urls:
+    '*': https://__PROW_DECK_DOMAIN__/pr
+
+  merge_method:
+    '*': squash
+
+  queries:
+    - repos:
+        - kcp-dev/kcp
+      labels:
+        - lgtm
+        - approved
+      missingLabels:
+        - 'dco-signoff: no'
+        - do-not-merge
+        - do-not-merge/cherry-pick-not-approved
+        - do-not-merge/docs-needed
+        - do-not-merge/hold
+        - do-not-merge/invalid-owners-file
+        - do-not-merge/release-note-label-needed
+        - do-not-merge/work-in-progress
+        - needs-rebase
+
+branch-protection:
+  orgs:
+    kcp-dev:
+      repos:
+        kcp:
+          protect: true
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-maintainers
+          include:
+            - "^main$"
+
+presets:
+  ################################################################
+  # Default preset, will be applied to all jobs
+
+  - env:
+      - name: GOCACHE_MINIO_ADDRESS
+        valueFrom:
+          secretKeyRef:
+            name: gocache
+            key: address
+      - name: GOCACHE_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: gocache
+            key: accessKey
+      - name: GOCACHE_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: gocache
+            key: secretKey
+      - name: DOCKER_REGISTRY_MIRROR_ADDR
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: DOCKER_REGISTRY_MIRROR_ADDR
+      - name: CLUSTER_BASE_DOMAIN
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: BASE_DOMAIN
+      - name: CLUSTER_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: CLUSTER_NAME
+    volumeMounts:
+      - name: scratch
+        mountPath: /scratch
+    volumes:
+      - name: scratch
+        emptyDir:
+          medium: Memory
+
+  ################################################################
+  # opt-in to using the internal Athens go modules cache
+
+  - labels:
+      preset-goproxy: "true"
+    env:
+      - name: GOPROXY
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: GOPROXY

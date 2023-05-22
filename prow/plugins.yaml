@@ -1,0 +1,89 @@
+# Plugin repository whitelist.
+# Keys: Full repo name: "org/repo".
+# Values: List of plugins to run against the repo.
+---
+# trigger will make sure that test jobs only run on trusted PRs
+triggers:
+  - repos:
+      - kcp-dev
+    only_org_members: true
+
+approve:
+  - repos:
+      - kcp-dev
+    ignore_review_state: true
+    require_self_approval: true
+
+lgtm:
+  - repos:
+      - kcp-dev
+    # adds lgtm if GitHub review state is "Approve"
+    # and removes lgtm if review state is "Request Changes"
+    review_acts_as_lgtm: true
+    # preserves lgtm on rebase or squash
+    store_tree_hash: true
+
+cherry_pick_unapproved:
+  branchregexp: "^release.*$"
+  comment: |
+    This cherry pick PR is for a release branch and has not yet been approved by Release Managers.
+    Adding the `do-not-merge/cherry-pick-not-approved` label.
+
+    To merge this cherry pick, it must first be approved (`/lgtm` + `/approve`) by the relevant OWNERS.
+
+    **AFTER** it has been approved by code owners, please leave the following comment on a line **by itself, with no leading whitespace**: `cc @kcp-dev/sig-release-managers`.
+
+    (This command will request a cherry pick review from [Release Managers](https://github.com/orgs/kcp-dev/teams/sig-release-managers) and should work for all GitHub users, whether they are members of the kcp-dev GitHub organization or not.)
+
+dco:
+  '*':
+    skip_dco_check_for_members: true
+
+label:
+  additional_labels:
+    - "blocked by backend"
+    - "merge-type/merge"
+    - "merge-type/rebase"
+    - "needs details"
+    - "service accounts"
+    - Epic
+    - design
+    - feature
+    - proposal
+    - ready-to-challenge
+    - redesign
+
+plugins:
+  kcp-dev:
+    plugins:
+      - approve
+      - assign
+      - branchcleaner
+      - dco
+      - hold
+      - label           # adds or removes labels of the type area/*, kind/*, etc
+      - lgtm
+      - lifecycle       # allows to close or open issues for non-members, mark issues and PRs as stale, etc
+      - milestoneapplier
+      - override
+      - owners-label    # automatically adds labels to PRs based on the files they touch; labels are mentioned in the OWNERS file
+      - retitle         # /retitle allows to edit the title of a PR (e.g. to remove WIP, when people are on vacation)
+      - size
+      - skip            # /skip cleans up commit statuses of non-blocking presubmits on PRs
+      - trigger
+      - verify-owners   # verifies format of OWNERS file
+      - wip
+
+  kcp-dev/kcp:
+    plugins:
+      - release-note
+
+external_plugins:
+  kcp-dev:
+    - name: needs-rebase
+      events:
+        - pull_request
+    - name: cherrypicker
+      events:
+        - issue_comment
+        - pull_request
