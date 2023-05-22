@@ -1,0 +1,58 @@
+apiVersion: cluster.k8s.io/v1alpha1
+kind: MachineDeployment
+metadata:
+  name: stable
+  namespace: kube-system
+spec:
+  # do not specify replica count, as its going to be dynamically altered
+  # for our custom scale up/down solution
+  # replicas: 3
+  selector:
+    matchLabels:
+      type: stable
+  strategy:
+    rollingUpdate:
+      maxSurge: 5
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        type: stable
+    spec:
+      metadata:
+        labels:
+          kubermatic.io/stable: "true"
+      taints:
+        - effect: NoSchedule
+          key: kubermatic.io/stable
+      providerSpec:
+        value:
+          cloudProvider: aws
+          cloudProviderSpec:
+            accessKeyId: ""
+            ami: ""
+            assignPublicIP: true
+            availabilityZone: eu-west-1b
+            diskSize: 200
+            diskType: gp3
+            ebsVolumeEncrypted: false
+            instanceProfile: kubernetes-__CLUSTER_ID__
+            instanceType: t3.xlarge
+            region: eu-west-1
+            secretAccessKey: ""
+            securityGroupIDs:
+              - sg-065e347e7ce966cc9
+            subnetId: subnet-0e7cd5468632ff41e
+            tags:
+              kubernetes.io/cluster/__CLUSTER_ID__: ""
+              system/cluster: __CLUSTER_ID__
+              system/project: __PROJECT_ID__
+            vpcId: vpc-05b5e4db034fe2fa0
+          operatingSystem: ubuntu
+          operatingSystemSpec:
+            distUpgradeOnBoot: false
+          sshPublicKeys:
+            - __SSH_PUBKEY__
+      versions:
+        kubelet: 1.26.4

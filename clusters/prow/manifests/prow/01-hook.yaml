@@ -1,0 +1,193 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: "hook"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: "hook"
+rules:
+  - apiGroups:
+      - "prow.k8s.io"
+    resources:
+      - prowjobs
+    verbs:
+      - create
+      - get
+      - list
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - create
+      - get
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: "hook"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: "hook"
+subjects:
+  - kind: ServiceAccount
+    name: "hook"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: hook
+  labels:
+    app: hook
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: hook
+  template:
+    metadata:
+      labels:
+        app: hook
+    spec:
+      serviceAccountName: hook
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: hook
+          image: gcr.io/k8s-prow/hook:v20230518-c802d8aea4
+          imagePullPolicy: Always
+          args:
+            - --dry-run=false
+            - --slack-token-file=/etc/slack/token
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --github-token-path=/etc/github/token
+            - --config-path=/etc/config/config.yaml
+            - --job-config-path=/etc/job-config
+            - --kubeconfig=/etc/kubeconfigs/kubeconfig
+            - --hmac-secret-file=/etc/github-hmac/token
+          ports:
+            - name: http
+              containerPort: 8888
+            - name: metrics
+              containerPort: 9090
+          volumeMounts:
+            - name: slack
+              mountPath: /etc/slack
+            - name: github
+              mountPath: /etc/github
+              readOnly: true
+            - name: github-hmac
+              mountPath: /etc/github-hmac
+              readOnly: true
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: job-config
+              mountPath: /etc/job-config
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
+              readOnly: true
+            - name: kubeconfig
+              mountPath: /etc/kubeconfigs
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 600
+      volumes:
+        - name: slack
+          secret:
+            secretName: slack-token
+        - name: github
+          secret:
+            secretName: github-token
+        - name: github-hmac
+          secret:
+            secretName: github-hmac-token
+        - name: config
+          configMap:
+            name: config
+        - name: job-config
+          configMap:
+            name: job-config
+        - name: plugins
+          configMap:
+            name: plugins
+        - name: kubeconfig
+          secret:
+            secretName: kubeconfig
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hook
+  namespace: "__PROW_NAMESPACE__"
+  name: hook
+spec:
+  selector:
+    app: hook
+  ports:
+    - name: main
+      port: 8888
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      protocol: TCP
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hook
+  namespace: "__PROW_NAMESPACE__"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - '__PROW_HOOK_DOMAIN__'
+      secretName: hook-tls
+  rules:
+    - host: '__PROW_HOOK_DOMAIN__'
+      http:
+        paths:
+          - path: /hook
+            pathType: Prefix
+            backend:
+              service:
+                name: hook
+                port:
+                  number: 8888

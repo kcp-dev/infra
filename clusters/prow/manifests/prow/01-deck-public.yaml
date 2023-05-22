@@ -1,0 +1,219 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck-public
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck-public
+rules:
+  - apiGroups:
+      - "prow.k8s.io"
+    resources:
+      - prowjobs
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+  name: deck-public
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods/log
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck-public
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: deck-public
+subjects:
+  - kind: ServiceAccount
+    name: deck-public
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+  name: deck-public
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: deck-public
+subjects:
+  - kind: ServiceAccount
+    name: deck-public
+    namespace: "__PROW_NAMESPACE__"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck-public
+  labels:
+    app: deck-public
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: deck-public
+  template:
+    metadata:
+      labels:
+        app: deck-public
+    spec:
+      serviceAccountName: deck-public
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: deck
+          image: gcr.io/k8s-prow/deck:v20230518-c802d8aea4
+          imagePullPolicy: Always
+          args:
+            - --tide-url=http://tide/
+            - --hook-url=http://hook:8888/plugin-help
+            - --redirect-http-to=kcp-ci.k8s.io
+            - --config-path=/etc/config/config.yaml
+            - --job-config-path=/etc/job-config
+            - --spyglass=true
+            - --s3-credentials-file=/etc/s3-credentials/credentials.json
+            - --rerun-creates-job=false
+            - --show-hidden=false
+            - --github-token-path=/etc/github/token
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --cookie-secret=/etc/cookie/secret
+            - --plugin-config=/etc/plugins/plugins.yaml
+            - --kubeconfig=/etc/kubeconfigs/kubeconfig
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: metrics
+              containerPort: 9090
+          volumeMounts:
+            - name: cookie-secret
+              mountPath: /etc/cookie
+              readOnly: true
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: job-config
+              mountPath: /etc/job-config
+              readOnly: true
+            - name: s3-credentials
+              mountPath: /etc/s3-credentials
+              readOnly: true
+            - name: github
+              mountPath: /etc/github
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
+              readOnly: true
+            - name: kubeconfig
+              mountPath: /etc/kubeconfigs
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 600
+      volumes:
+        - name: github
+          secret:
+            secretName: github-token
+        - name: cookie-secret
+          secret:
+            secretName: cookie
+        - name: config
+          configMap:
+            name: config
+        - name: job-config
+          configMap:
+            name: job-config
+        - name: s3-credentials
+          secret:
+            secretName: s3-credentials-public
+        - name: plugins
+          configMap:
+            name: plugins
+        - name: kubeconfig
+          secret:
+            secretName: kubeconfig
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: deck-public
+  namespace: "__PROW_NAMESPACE__"
+  name: deck-public
+spec:
+  selector:
+    app: deck
+  ports:
+    - name: main
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      protocol: TCP
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: deck-public
+  namespace: "__PROW_NAMESPACE__"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - '__PROW_DECK_PUBLIC_DOMAIN__'
+      secretName: deck-public-tls
+  rules:
+    - host: '__PROW_DECK_PUBLIC_DOMAIN__'
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: deck
+                port:
+                  number: 80

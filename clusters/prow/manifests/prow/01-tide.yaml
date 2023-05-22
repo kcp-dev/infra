@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: tide
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: tide
+rules:
+  - apiGroups:
+      - "prow.k8s.io"
+    resources:
+      - prowjobs
+    verbs:
+      - create
+      - list
+      - get
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: tide
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tide
+subjects:
+  - kind: ServiceAccount
+    name: tide
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: tide
+  labels:
+    app: tide
+spec:
+  replicas: 1 # Do not scale up.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: tide
+  template:
+    metadata:
+      labels:
+        app: tide
+    spec:
+      serviceAccountName: tide
+      containers:
+        - name: tide
+          image: gcr.io/k8s-prow/tide:v20230518-c802d8aea4
+          args:
+            - --dry-run=false
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --github-token-path=/etc/github/token
+            - --config-path=/etc/config/config.yaml
+            - --job-config-path=/etc/job-config
+            - --history-uri=s3://prow-data/tide-history.json
+            - --status-path=s3://prow-data/tide-status-checkpoint.yaml
+            - --s3-credentials-file=/etc/s3-credentials/credentials.json
+          ports:
+            - name: http
+              containerPort: 8888
+            - name: metrics
+              containerPort: 9090
+          volumeMounts:
+            - name: github
+              mountPath: /etc/github
+              readOnly: true
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: job-config
+              mountPath: /etc/job-config
+              readOnly: true
+            - name: s3-credentials
+              mountPath: /etc/s3-credentials
+              readOnly: true
+      volumes:
+        - name: github
+          secret:
+            secretName: github-token
+        - name: config
+          configMap:
+            name: config
+        - name: job-config
+          configMap:
+            name: job-config
+        - name: s3-credentials
+          secret:
+            secretName: s3-credentials-internal
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tide
+  namespace: "__PROW_NAMESPACE__"
+  name: tide
+spec:
+  selector:
+    app: tide
+  ports:
+    - name: main
+      port: 80
+      targetPort: 8888
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      protocol: TCP
+  type: ClusterIP

@@ -1,0 +1,160 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: crier
+  namespace: "__PROW_NAMESPACE__"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: crier
+rules:
+  - apiGroups:
+      - "prow.k8s.io"
+    resources:
+      - "prowjobs"
+    verbs:
+      - "get"
+      - "watch"
+      - "list"
+      - "patch"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+  name: crier
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "pods"
+      - "events"
+    verbs:
+      - "get"
+      - "list"
+  - apiGroups:
+      - ""
+    resources:
+      - "pods"
+    verbs:
+      - "patch"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: crier-namespaced
+  namespace: "__PROW_NAMESPACE__"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: crier
+subjects:
+  - kind: ServiceAccount
+    name: crier
+    namespace: "__PROW_NAMESPACE__"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: crier-namespaced
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: crier
+subjects:
+  - kind: ServiceAccount
+    name: crier
+    namespace: "__PROW_NAMESPACE__"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: crier
+  labels:
+    app: crier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crier
+  template:
+    metadata:
+      labels:
+        app: crier
+    spec:
+      serviceAccountName: crier
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: crier
+          image: gcr.io/k8s-prow/crier:v20230518-c802d8aea4
+          args:
+            - --blob-storage-workers=1
+            - --config-path=/etc/config/config.yaml
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --github-token-path=/etc/github/token
+            - --github-workers=5
+            - --job-config-path=/etc/job-config
+            - --kubernetes-blob-storage-workers=1
+            - --slack-token-file=/etc/slack/token
+            - --slack-workers=1
+            - --kubeconfig=/etc/kubeconfigs/kubeconfig
+          ports:
+            - name: metrics
+              containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: job-config
+              mountPath: /etc/job-config
+              readOnly: true
+            - name: github
+              mountPath: /etc/github
+              readOnly: true
+            - name: slack
+              mountPath: /etc/slack
+              readOnly: true
+            - name: kubeconfig
+              mountPath: /etc/kubeconfigs
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: config
+        - name: job-config
+          configMap:
+            name: job-config
+        - name: github
+          secret:
+            secretName: github-token
+        - name: slack
+          secret:
+            secretName: slack-token
+        - name: kubeconfig
+          secret:
+            secretName: kubeconfig
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: crier
+  namespace: "__PROW_NAMESPACE__"
+  name: crier
+spec:
+  ports:
+    - name: metrics
+      port: 9090
+      protocol: TCP
+  selector:
+    app: crier

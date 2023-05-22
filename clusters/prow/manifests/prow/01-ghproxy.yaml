@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: ghproxy
+  name: ghproxy
+  namespace: "__PROW_NAMESPACE__"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghproxy
+  namespace: "__PROW_NAMESPACE__"
+  labels:
+    app: ghproxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghproxy
+  template:
+    metadata:
+      labels:
+        app: ghproxy
+    spec:
+      containers:
+        - name: ghproxy
+          image: gcr.io/k8s-prow/ghproxy:v20230518-c802d8aea4
+          args:
+            - --cache-dir=/cache
+            - --cache-sizeGB=99
+            - --legacy-disable-disk-cache-partitions-by-auth-header=false
+          ports:
+            - containerPort: 8888
+          volumeMounts:
+            - name: cache
+              mountPath: /cache
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: ghproxy
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ghproxy
+  name: ghproxy
+  namespace: "__PROW_NAMESPACE__"
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8888
+  selector:
+    app: ghproxy
