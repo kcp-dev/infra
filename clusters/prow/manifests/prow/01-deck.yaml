@@ -1,0 +1,255 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck
+rules:
+  - apiGroups:
+      - "prow.k8s.io"
+    resources:
+      - prowjobs
+    verbs:
+      - get
+      - list
+      - watch
+      # Required when deck runs with `--rerun-creates-job=true`
+      - create
+      # Required to abort jobs
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+  name: deck
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods/log
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: deck
+subjects:
+  - kind: ServiceAccount
+    name: deck
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+  name: deck
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: deck
+subjects:
+  - kind: ServiceAccount
+    name: deck
+    namespace: "__PROW_NAMESPACE__"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: deck
+  labels:
+    app: deck
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: deck
+  template:
+    metadata:
+      labels:
+        app: deck
+    spec:
+      serviceAccountName: deck
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: deck
+          image: gcr.io/k8s-prow/deck:v20230518-c802d8aea4
+          imagePullPolicy: Always
+          args:
+            - --tide-url=http://tide/
+            - --hook-url=http://hook:8888/plugin-help
+            - --redirect-http-to=kcp-ci.k8s.io
+            - --config-path=/etc/config/config.yaml
+            - --job-config-path=/etc/job-config
+            - --spyglass=true
+            - --s3-credentials-file=/etc/s3-credentials/credentials.json
+            - --rerun-creates-job
+            - --github-token-path=/etc/github/token
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --cookie-secret=/etc/cookie/secret
+            - --plugin-config=/etc/plugins/plugins.yaml
+            - --kubeconfig=/etc/kubeconfigs/kubeconfig
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: metrics
+              containerPort: 9090
+          volumeMounts:
+            - name: cookie-secret
+              mountPath: /etc/cookie
+              readOnly: true
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: job-config
+              mountPath: /etc/job-config
+              readOnly: true
+            - name: s3-credentials
+              mountPath: /etc/s3-credentials
+              readOnly: true
+            - name: github
+              mountPath: /etc/github
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
+              readOnly: true
+            - name: kubeconfig
+              mountPath: /etc/kubeconfigs
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 600
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+          args:
+            - --provider=github
+            - --github-org=kcp-dev
+            - --http-address=0.0.0.0:4180
+            - --upstream=http://127.0.0.1:8080
+            - --email-domain=*
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: deck-oauth-app
+                  key: clientID
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: deck-oauth-app
+                  key: clientSecret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: deck-oauth-app
+                  key: cookieSecret
+            - name: OAUTH2_PROXY_COOKIE_DOMAIN
+              value: '__PROW_DECK_DOMAIN__'
+            - name: OAUTH2_PROXY_COOKIE_NAME
+              value: deck-kcp-k8c-io-oauth2-proxy
+            - name: OAUTH2_PROXY_COOKIE_SAMESITE
+              value: none
+            # have to specify this explicitly: https://github.com/oauth2-proxy/oauth2-proxy/issues/1724
+            - name: OAUTH2_PROXY_SCOPE
+              value: user:email
+      volumes:
+        - name: github
+          secret:
+            secretName: github-token
+        - name: cookie-secret
+          secret:
+            secretName: cookie
+        - name: config
+          configMap:
+            name: config
+        - name: job-config
+          configMap:
+            name: job-config
+        - name: s3-credentials
+          secret:
+            secretName: s3-credentials-internal
+        - name: plugins
+          configMap:
+            name: plugins
+        - name: kubeconfig
+          secret:
+            secretName: kubeconfig
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: deck
+  namespace: "__PROW_NAMESPACE__"
+  name: deck
+spec:
+  selector:
+    app: deck
+  ports:
+    - name: main
+      port: 80
+      targetPort: 4180 # point to oauth2-proxy
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      protocol: TCP
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: deck
+  namespace: "__PROW_NAMESPACE__"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - '__PROW_DECK_DOMAIN__'
+      secretName: deck-tls
+  rules:
+    - host: '__PROW_DECK_DOMAIN__'
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: deck
+                port:
+                  number: 80

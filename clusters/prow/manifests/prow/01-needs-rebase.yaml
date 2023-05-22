@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: needs-rebase
+  namespace: "__PROW_NAMESPACE__"
+  labels:
+    app: needs-rebase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: needs-rebase
+  template:
+    metadata:
+      labels:
+        app: needs-rebase
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: needs-rebase
+          image: gcr.io/k8s-prow/needs-rebase:v20230518-c802d8aea4
+          imagePullPolicy: Always
+          args:
+            - --dry-run=false
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --github-token-path=/etc/github/token
+            - --update-period=6h
+            - --hmac-secret-file=/etc/github-hmac/token
+          ports:
+            - name: http
+              containerPort: 8888
+          volumeMounts:
+            - name: github-hmac
+              mountPath: /etc/github-hmac
+              readOnly: true
+            - name: github
+              mountPath: /etc/github
+              readOnly: true
+            - name: plugins
+              mountPath: /etc/plugins
+              readOnly: true
+      volumes:
+        - name: github-hmac
+          secret:
+            secretName: github-hmac-token
+        - name: github
+          secret:
+            secretName: github-token
+        - name: plugins
+          configMap:
+            name: plugins
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: needs-rebase
+  namespace: "__PROW_NAMESPACE__"
+spec:
+  selector:
+    app: needs-rebase
+  ports:
+    - port: 80
+      targetPort: 8888

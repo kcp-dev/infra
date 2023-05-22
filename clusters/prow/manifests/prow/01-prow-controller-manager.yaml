@@ -1,0 +1,211 @@
+# Copyright 2020 The Kubernetes Authors All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: "prow-controller-manager"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: "prow-controller-manager"
+rules:
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    resourceNames:
+      - prow-controller-manager-leader-lock
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    resourceNames:
+      - prow-controller-manager-leader-lock
+    verbs:
+      - get
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - events
+    verbs:
+      - create
+  - apiGroups:
+      - prow.k8s.io
+    resources:
+      - prowjobs
+    verbs:
+      - get
+      - update
+      - list
+      - watch
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+  name: "prow-controller-manager"
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - create
+      - delete
+      - list
+      - watch
+      - get
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: "prow-controller-manager"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: "prow-controller-manager"
+subjects:
+  - kind: ServiceAccount
+    name: "prow-controller-manager"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "__PROW_TESTPOD_NAMESPACE__"
+  name: "prow-controller-manager"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: "prow-controller-manager"
+subjects:
+  - kind: ServiceAccount
+    name: "prow-controller-manager"
+    namespace: "__PROW_NAMESPACE__"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: "__PROW_NAMESPACE__"
+  name: prow-controller-manager
+  labels:
+    app: prow-controller-manager
+spec:
+  # Mutually exclusive with plank. Only one of them may have more than zero replicas.
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: prow-controller-manager
+  template:
+    metadata:
+      labels:
+        app: prow-controller-manager
+    spec:
+      serviceAccountName: prow-controller-manager
+      containers:
+        - name: prow-controller-manager
+          image: gcr.io/k8s-prow/prow-controller-manager:v20230518-c802d8aea4
+          args:
+            - --dry-run=false
+            - --enable-controller=plank
+            - --github-token-path=/etc/github/token
+            - --github-endpoint=http://ghproxy
+            - --github-endpoint=https://api.github.com
+            - --config-path=/etc/config/config.yaml
+            - --job-config-path=/etc/job-config
+            - --kubeconfig=/etc/kubeconfigs/kubeconfig
+          ports:
+            - name: metrics
+              containerPort: 9090
+          volumeMounts:
+            - name: github
+              mountPath: /etc/github
+              readOnly: true
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: job-config
+              mountPath: /etc/job-config
+              readOnly: true
+            - name: kubeconfig
+              mountPath: /etc/kubeconfigs
+              readOnly: true
+          livenessProbe: # Pod is killed if this fails 3 times.
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe: # Pod is not considered ready (for rolling deploy and request routing) if this fails 3 times.
+            httpGet:
+              path: /healthz/ready
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 3
+      volumes:
+        - name: github
+          secret:
+            secretName: github-token
+        - name: config
+          configMap:
+            name: config
+        - name: job-config
+          configMap:
+            name: job-config
+        - name: kubeconfig
+          secret:
+            secretName: kubeconfig
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prow-controller-manager
+  namespace: "__PROW_NAMESPACE__"
+  name: prow-controller-manager
+spec:
+  ports:
+    - name: metrics
+      port: 9090
+      protocol: TCP
+  selector:
+    app: prow-controller-manager

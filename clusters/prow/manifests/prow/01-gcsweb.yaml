@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gcsweb
+  namespace: "__PROW_NAMESPACE__"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcsweb
+  namespace: "__PROW_NAMESPACE__"
+  labels:
+    app: gcsweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gcsweb
+  template:
+    metadata:
+      annotations:
+        fluentbit.io/parser: json_iso
+      labels:
+        app: gcsweb
+    spec:
+      serviceAccountName: gcsweb
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: gcsweb
+          image: gcr.io/k8s-prow/gcsweb:v20230518-c802d8aea4
+          args:
+            - -gcs-credentials-file=/etc/s3-credentials/credentials.json
+            - -b=prow-data
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: s3-credentials
+              mountPath: /etc/s3-credentials
+              readOnly: true
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+          args:
+            - --provider=github
+            - --github-org=kcp-dev
+            - --http-address=0.0.0.0:4180
+            - --upstream=http://127.0.0.1:8080
+            - --email-domain=*
+          env:
+            # We re-use Deck's Secrets on purpose.
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: gcsweb-oauth-app
+                  key: clientID
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gcsweb-oauth-app
+                  key: clientSecret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gcsweb-oauth-app
+                  key: cookieSecret
+            - name: OAUTH2_PROXY_COOKIE_DOMAIN
+              value: '__GCSWEB_DOMAIN__'
+            - name: OAUTH2_PROXY_COOKIE_NAME
+              value: gcsweb-kcp-k8c-io-oauth2-proxy
+            - name: OAUTH2_PROXY_COOKIE_SAMESITE
+              value: none
+            # have to specify this explicitly: https://github.com/oauth2-proxy/oauth2-proxy/issues/1724
+            - name: OAUTH2_PROXY_SCOPE
+              value: user:email
+      volumes:
+        - name: s3-credentials
+          secret:
+            secretName: s3-credentials-internal
+      nodeSelector:
+        kubermatic.io/stable: "true"
+      tolerations:
+        - key: kubermatic.io/stable
+          operator: Exists
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gcsweb
+  namespace: "__PROW_NAMESPACE__"
+spec:
+  selector:
+    app: gcsweb
+  ports:
+    - port: 80
+      targetPort: 4180
+---
+# We use dedicated hosts for gcsweb because it's easier to deal with gcsweb's
+# routing; if gcsweb was on a sub directory the links to assets would break, and
+# it's impossible to tell gcweb to prepend a prefix to paths without changing the
+# directories.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gcsweb
+  namespace: "__PROW_NAMESPACE__"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: '__GCSWEB_DOMAIN__'
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gcsweb
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - '__GCSWEB_DOMAIN__'
+      secretName: gcsweb-tls

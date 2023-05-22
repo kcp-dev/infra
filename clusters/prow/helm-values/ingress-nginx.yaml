@@ -1,0 +1,8 @@
+controller:
+  service:
+    externalTrafficPolicy: Local
+  tolerations:
+    - operator: Exists
+      key: kubermatic.io/stable
+  nodeSelector:
+    kubermatic.io/stable: "true"
