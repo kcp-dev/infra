@@ -1,11 +1,17 @@
-# Prow Cluster
+# Build Cluster
 
-This directory contains the manifests for managing the Prow cluster that
-powers the CI/CD system for [kcp](https://github.com/kcp-dev/kcp). This
-cluster only contains Prow itself, the build jobs are executed in another
-cluster (`build`).
+This directory contains the manifests for managing the build cluster. This
+is the cluster where most of the Prow jobs are executed.
 
-With few exceptions, no Prow jobs should be run in this cluster.
+## Nodes
+
+There are 2 MachineDeployments in this cluster:
+
+* `workers` are the regular worker machines. This MachineDeployment is
+  automatically scaled by the cluster-autoscaler to match demand.
+* `stable` are a set of stable nodes that run cluster-wide services
+  like the Go-Proxy, the registry mirror etc. -- things that should not
+  randomly go away when worker nodes are decommissioned.
 
 ## Docker Registry Mirror
 

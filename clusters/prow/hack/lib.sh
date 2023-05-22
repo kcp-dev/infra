@@ -27,14 +27,4 @@ sed_settings() {
   sed --in-place "s;__CLUSTER_ID__;$CLUSTER_ID;g" $1
   sed --in-place "s;__PROW_NAMESPACE__;$PROW_NAMESPACE;g" $1
   sed --in-place "s;__PROW_TESTPOD_NAMESPACE__;$PROW_TESTPOD_NAMESPACE;g" $1
-  sed --in-place "s;__PROW_HOOK_DOMAIN__;$PROW_HOOK_DOMAIN;g" $1
-  sed --in-place "s;__PROW_DECK_DOMAIN__;$PROW_DECK_DOMAIN;g" $1
-  sed --in-place "s;__PROW_DECK_PUBLIC_DOMAIN__;$PROW_DECK_PUBLIC_DOMAIN;g" $1
-  sed --in-place "s;__GCSWEB_DOMAIN__;$GCSWEB_DOMAIN;g" $1
-  sed --in-place "s;__GCSWEB_PUBLIC_DOMAIN__;$GCSWEB_PUBLIC_DOMAIN;g" $1
-}
-
-rename_kube_context() {
-  yq --inplace ".current-context = \"$2\"" "$1"
-  yq --inplace ".contexts[0].name = \"$2\"" "$1"
 }

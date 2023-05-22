@@ -1,14 +1,9 @@
 presubmits:
-  kcp-dev/kcp:
-    - name: pull-kcp-validate-prow-yaml
+  kcp-dev/infra:
+    - name: pull-infra-validate-prow-yaml
       always_run: true
       decorate: true
-      clone_uri: "ssh://git@github.com/kcp-dev/kcp.git"
-      extra_refs:
-        - org: kubermatic
-          repo: infra
-          base_ref: main
-          clone_uri: git@github.com:kubermatic/infra.git
+      clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
       spec:
         containers:
           - image: gcr.io/k8s-prow/checkconfig:v20230518-c802d8aea4

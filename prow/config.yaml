@@ -1,10 +1,10 @@
-prowjob_namespace: "__PROW_NAMESPACE__"
-pod_namespace: "__PROW_TESTPOD_NAMESPACE__"
+prowjob_namespace: "prow"
+pod_namespace: "default"
 # log_level: debug
 
 # If a repository contains open source code, consider adding it to
 # plank.report_templates, plank.job_url_prefix_config and plank.default_decoration_config_entries
-# to generate links to __PROW_DECK_PUBLIC_DOMAIN__, which does not require
+# to generate links to public-prow.kcp.k8c.io, which does not require
 # authentication.
 
 plank:
@@ -12,12 +12,12 @@ plank:
   pod_unscheduled_timeout: 60m
 
   report_templates:
-    '*': '[Full PR test history](https://__PROW_DECK_DOMAIN__/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/kcp': '[Full PR test history](https://__PROW_DECK_PUBLIC_DOMAIN__/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
+    '*': '[Full PR test history](https://prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
+    'kcp-dev/infra': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
 
   job_url_prefix_config:
-    '*': https://__PROW_DECK_DOMAIN__/view/
-    'kcp-dev/kcp': https://__PROW_DECK_PUBLIC_DOMAIN__/view/
+    '*': https://prow.kcp.k8c.io/view/
+    'kcp-dev/infra': https://public-prow.kcp.k8c.io/view/
 
   default_decoration_config_entries:
     # default config
@@ -33,10 +33,8 @@ plank:
           bucket: "s3://prow-data"
           path_strategy: "explicit"
         s3_credentials_secret: "s3-credentials-internal"
-        ssh_host_fingerprints:
-          - github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
 
-    - repo: "kcp-dev/kcp"
+    - repo: "kcp-dev/infra"
       config:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
@@ -66,15 +64,15 @@ deck:
     # # Configuring these will make an "Artifacts" link appear on the Spyglass page, linking
     # # to gcsweb.
     # gcs_browser_prefixes:
-    #   '*': https://__GCSWEB_DOMAIN__/gcs/
-    #   'kcp-dev/kcp': https://__GCSWEB_PUBLIC_DOMAIN__/gcs/
+    #   '*': https://gcsweb.kcp.k8c.io/gcs/
+    #   'kcp-dev/infra': https://public-gcsweb.kcp.k8c.io/gcs/
     # # required so that public periodics can point to the correct gcsweb
     # # otherwise, gcsweb-public will just redirect to Google Cloud Console
     # # instead of showing artifacts
     # gcs_browser_prefixes_by_bucket:
-    #   '*': https://__GCSWEB_DOMAIN__/gcs/
-    #   'prow-data': https://__GCSWEB_DOMAIN__/gcs/
-    #   'prow-public-data': https://__GCSWEB_PUBLIC_DOMAIN__/gcs/
+    #   '*': https://gcsweb.kcp.k8c.io/gcs/
+    #   'prow-data': https://gcsweb.kcp.k8c.io/gcs/
+    #   'prow-public-data': https://public-gcsweb.kcp.k8c.io/gcs/
     lenses:
       - required_files:
           - started.json
@@ -111,14 +109,14 @@ github_reporter:
 
 tide:
   pr_status_base_urls:
-    '*': https://__PROW_DECK_DOMAIN__/pr
+    '*': https://prow.kcp.k8c.io/pr
 
   merge_method:
     '*': squash
 
   queries:
     - repos:
-        - kcp-dev/kcp
+        - kcp-dev/infra
       labels:
         - lgtm
         - approved
@@ -142,7 +140,7 @@ branch-protection:
           restrictions:
             users: []
             teams:
-              - kcp-dev/kcp-maintainers
+              - kcp-dev/infra-maintainers
           include:
             - "^main$"
 
@@ -151,21 +149,6 @@ presets:
   # Default preset, will be applied to all jobs
 
   - env:
-      - name: GOCACHE_MINIO_ADDRESS
-        valueFrom:
-          secretKeyRef:
-            name: gocache
-            key: address
-      - name: GOCACHE_ACCESS_KEY
-        valueFrom:
-          secretKeyRef:
-            name: gocache
-            key: accessKey
-      - name: GOCACHE_SECRET_KEY
-        valueFrom:
-          secretKeyRef:
-            name: gocache
-            key: secretKey
       - name: DOCKER_REGISTRY_MIRROR_ADDR
         valueFrom:
           configMapKeyRef:
