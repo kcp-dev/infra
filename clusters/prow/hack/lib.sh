@@ -8,7 +8,9 @@ create_job_config_configmap() {
   for filename in $prowDir/jobs/*/*.yaml; do
     repo="$(basename "$(dirname "$filename")")"
     basename="$(basename "$filename")"
-    key="$repo-$basename"
+
+    # mimic exactly how prow's config_updater names the keys
+    key="prow-jobs-$repo-$basename"
 
     # yq is terrible at reading arbitrary files
     jq \
