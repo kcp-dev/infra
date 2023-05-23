@@ -3,12 +3,12 @@
 set -euo pipefail
 
 cd $(dirname $0)/../..
+source ../../hack/lib.sh
 source hack/settings.sh
 source hack/lib.sh
 
 if [ -n "${KUBE_CONTEXT:-}" ]; then
-  echo "Switching to $KUBE_CONTEXT context..."
-  kubectl config set-context "$KUBE_CONTEXT"
+  use_tmp_kubeconfig_context "$KUBE_CONTEXT"
 fi
 
 ###########################################################

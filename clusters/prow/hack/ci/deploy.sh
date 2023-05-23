@@ -7,12 +7,12 @@
 set -euo pipefail
 
 cd $(dirname $0)/../..
+source ../../hack/lib.sh
 source hack/settings.sh
 source hack/lib.sh
 
 if [ -n "${KUBE_CONTEXT:-}" ]; then
-  echo "Switching to $KUBE_CONTEXT context..."
-  kubectl config set-context "$KUBE_CONTEXT"
+  use_tmp_kubeconfig_context "$KUBE_CONTEXT"
 fi
 
 ###########################################################
@@ -34,33 +34,18 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
-deploy() {
-  local namespace="$1"
-  local release="$2"
-  local chart="$3"
-  local version="$4"
-  local valuesFile="$5"
-
-  helm --namespace "$namespace" upgrade \
-    --install \
-    --create-namespace \
-    --values "$valuesFile" \
-    --version $version \
-    "$release" "$chart"
-}
-
 sed_settings 'helm-values/*.yaml'
 
 ###########################################################
 echo "Installing ingress-nginx..."
 
-deploy ingress-nginx ingress-nginx ingress-nginx/ingress-nginx $INGRESS_NGINX_VERSION helm-values/ingress-nginx.yaml
+deploy_helm_chart ingress-nginx ingress-nginx ingress-nginx/ingress-nginx $INGRESS_NGINX_VERSION helm-values/ingress-nginx.yaml
 
 ###########################################################
 echo "Installing cert-manager..."
 
 kubectl apply --filename https://github.com/jetstack/cert-manager/releases/download/v$CERT_MANAGER_VERSION/cert-manager.crds.yaml
-deploy cert-manager cert-manager jetstack/cert-manager $CERT_MANAGER_VERSION helm-values/cert-manager.yaml
+deploy_helm_chart cert-manager cert-manager jetstack/cert-manager $CERT_MANAGER_VERSION helm-values/cert-manager.yaml
 kubectl apply --filename manifests/clusterissuer.yaml
 
 ###########################################################
