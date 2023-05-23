@@ -180,7 +180,7 @@ metadata:
   name: deck-public
 spec:
   selector:
-    app: deck
+    app: deck-public
   ports:
     - name: main
       port: 80
