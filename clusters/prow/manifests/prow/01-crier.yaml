@@ -100,6 +100,7 @@ spec:
             - --github-workers=5
             - --job-config-path=/etc/job-config
             - --kubernetes-blob-storage-workers=1
+            - --s3-credentials-file=/etc/s3-credentials/service-account.json
             - --slack-token-file=/etc/slack/token
             - --slack-workers=1
             - --kubeconfig=/etc/kubeconfigs/kubeconfig
@@ -122,6 +123,9 @@ spec:
             - name: kubeconfig
               mountPath: /etc/kubeconfigs
               readOnly: true
+            - name: s3-credentials
+              mountPath: /etc/s3-credentials
+              readOnly: true
       volumes:
         - name: config
           configMap:
@@ -138,6 +142,9 @@ spec:
         - name: kubeconfig
           secret:
             secretName: kubeconfig
+        - name: s3-credentials
+          secret:
+            secretName: s3-credentials-internal
       nodeSelector:
         kubermatic.io/stable: "true"
       tolerations:
