@@ -14,10 +14,12 @@ plank:
   report_templates:
     '*': '[Full PR test history](https://prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
     'kcp-dev/infra': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
+    'kcp-dev/logicalcluster': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
 
   job_url_prefix_config:
     '*': https://prow.kcp.k8c.io/view/
     'kcp-dev/infra': https://public-prow.kcp.k8c.io/view/
+    'kcp-dev/logicalcluster': https://public-prow.kcp.k8c.io/view/
 
   default_decoration_config_entries:
     # default config
@@ -35,6 +37,12 @@ plank:
         s3_credentials_secret: "s3-credentials-internal"
 
     - repo: "kcp-dev/infra"
+      config:
+        s3_credentials_secret: "s3-credentials-public"
+        gcs_configuration:
+          bucket: "s3://prow-public-data"
+
+    - repo: "kcp-dev/logicalcluster"
       config:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
@@ -117,6 +125,7 @@ tide:
   queries:
     - repos:
         - kcp-dev/infra
+        - kcp-dev/logicalcluster
       labels:
         - lgtm
         - approved
@@ -135,12 +144,21 @@ branch-protection:
   orgs:
     kcp-dev:
       repos:
-        kcp:
+        infra:
           protect: true
           restrictions:
             users: []
             teams:
-              - kcp-dev/infra-maintainers
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+
+        logicalcluster:
+          protect: true
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
           include:
             - "^main$"
 
