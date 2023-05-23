@@ -1,4 +1,4 @@
-presubmits:
+postsubmits:
   kcp-dev/infra:
     - name: post-infra-deploy-prow-cluster
       run_if_changed: "clusters/prow/"
