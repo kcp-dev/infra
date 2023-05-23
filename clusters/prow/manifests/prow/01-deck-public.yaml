@@ -94,7 +94,7 @@ spec:
             - --config-path=/etc/config/config.yaml
             - --job-config-path=/etc/job-config
             - --spyglass=true
-            - --s3-credentials-file=/etc/s3-credentials/credentials.json
+            - --s3-credentials-file=/etc/s3-credentials/service-account.json
             - --rerun-creates-job=false
             - --show-hidden=false
             - --github-token-path=/etc/github/token

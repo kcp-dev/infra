@@ -65,7 +65,7 @@ spec:
             - --job-config-path=/etc/job-config
             - --history-uri=s3://prow-data/tide-history.json
             - --status-path=s3://prow-data/tide-status-checkpoint.yaml
-            - --s3-credentials-file=/etc/s3-credentials/credentials.json
+            - --s3-credentials-file=/etc/s3-credentials/service-account.json
           ports:
             - name: http
               containerPort: 8888

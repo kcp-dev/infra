@@ -29,7 +29,7 @@ spec:
         - name: gcsweb
           image: gcr.io/k8s-prow/gcsweb:v20230522-3eb206f68f
           args:
-            - -gcs-credentials-file=/etc/s3-credentials/credentials.json
+            - -gcs-credentials-file=/etc/s3-credentials/service-account.json
             - -b=prow-data
           ports:
             - name: http

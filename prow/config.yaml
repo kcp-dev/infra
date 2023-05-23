@@ -127,8 +127,22 @@ tide:
     kcp-dev: merge
 
   queries:
+    # no release notes
     - repos:
         - kcp-dev/infra
+      labels:
+        - lgtm
+        - approved
+      missingLabels:
+        - 'dco-signoff: no'
+        - do-not-merge
+        - do-not-merge/hold
+        - do-not-merge/invalid-owners-file
+        - do-not-merge/work-in-progress
+        - needs-rebase
+
+    # with release notes
+    - repos:
         - kcp-dev/logicalcluster
       labels:
         - lgtm
@@ -136,8 +150,6 @@ tide:
       missingLabels:
         - 'dco-signoff: no'
         - do-not-merge
-        - do-not-merge/cherry-pick-not-approved
-        - do-not-merge/docs-needed
         - do-not-merge/hold
         - do-not-merge/invalid-owners-file
         - do-not-merge/release-note-label-needed
