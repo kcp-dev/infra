@@ -32,7 +32,7 @@ config_updater:
       name: plugins
     prow/jobs/**/*.yaml:
       name: job-config
-      # makes it so we can have "jobs/kubermatic/presubmits.yaml" and "jobs/dashboard/presubmits.yaml"
+      # makes it so we can have "jobs/foo/presubmits.yaml" and "jobs/bar/presubmits.yaml"
       # without naming conflicts (by default, Prow would use just the basename)
       use_full_path_as_key: true
 
@@ -94,6 +94,10 @@ plugins:
   kcp-dev/logicalcluster:
     plugins:
       - release-note
+
+  kcp-dev/infra:
+    plugins:
+      - config-updater # updates prow configuration
 
 external_plugins:
   kcp-dev:
