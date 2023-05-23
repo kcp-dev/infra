@@ -102,7 +102,7 @@ spec:
             - --kubernetes-blob-storage-workers=1
             - --s3-credentials-file=/etc/s3-credentials/service-account.json
             - --slack-token-file=/etc/slack/token
-            - --slack-workers=1
+            - --slack-workers=0 # currently there is no Slack token
             - --kubeconfig=/etc/kubeconfigs/kubeconfig
           ports:
             - name: metrics
