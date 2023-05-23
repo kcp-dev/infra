@@ -114,7 +114,7 @@ spec:
       serviceAccountName: sinker
       containers:
         - name: sinker
-          image: gcr.io/k8s-prow/sinker:v20230518-c802d8aea4
+          image: gcr.io/k8s-prow/sinker:v20230522-3eb206f68f
           args:
             - --kubeconfig=/etc/kubeconfigs/kubeconfig
             - --config-path=/etc/config/config.yaml
