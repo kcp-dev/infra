@@ -195,3 +195,16 @@ presets:
           configMapKeyRef:
             name: cluster-config
             key: GOPROXY
+
+  ################################################################
+  # (prow-cluster only) mount the god kubeconfig
+
+  - labels:
+      preset-prow-kubeconfig: "true"
+    volumeMounts:
+      - name: prow-kubeconfig
+        mountPath: /etc/prow/kubeconfig
+    volumes:
+      - name: prow-kubeconfig
+        secret:
+          secretName: kubeconfig

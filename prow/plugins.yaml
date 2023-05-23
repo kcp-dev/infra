@@ -23,6 +23,19 @@ lgtm:
     # preserves lgtm on rebase or squash
     store_tree_hash: true
 
+# config_updater will automatically update the config configmap when config.yaml changes
+config_updater:
+  maps:
+    prow/config.yaml:
+      name: config
+    prow/plugins.yaml:
+      name: plugins
+    prow/jobs/**/*.yaml:
+      name: job-config
+      # makes it so we can have "jobs/kubermatic/presubmits.yaml" and "jobs/dashboard/presubmits.yaml"
+      # without naming conflicts (by default, Prow would use just the basename)
+      use_full_path_as_key: true
+
 cherry_pick_unapproved:
   branchregexp: "^release.*$"
   comment: |
