@@ -112,7 +112,7 @@ tide:
     '*': https://prow.kcp.k8c.io/pr
 
   merge_method:
-    '*': squash
+    kcp-dev: squash
 
   queries:
     - repos:

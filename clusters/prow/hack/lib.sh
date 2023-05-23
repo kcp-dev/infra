@@ -1,9 +1,11 @@
 create_job_config_configmap() {
+  prowDir="$1"
+
   kubectl --namespace "$PROW_NAMESPACE" create configmap job-config \
     --dry-run=client \
     --output=json > job-config.json
 
-  for filename in prow/jobs/*/*.yaml; do
+  for filename in $prowDir/jobs/*/*.yaml; do
     repo="$(basename "$(dirname "$filename")")"
     basename="$(basename "$filename")"
     key="$repo-$basename"
