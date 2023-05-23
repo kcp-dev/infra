@@ -138,7 +138,7 @@ spec:
       serviceAccountName: prow-controller-manager
       containers:
         - name: prow-controller-manager
-          image: gcr.io/k8s-prow/prow-controller-manager:v20230518-c802d8aea4
+          image: gcr.io/k8s-prow/prow-controller-manager:v20230522-3eb206f68f
           args:
             - --dry-run=false
             - --enable-controller=plank
