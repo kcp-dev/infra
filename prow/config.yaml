@@ -159,6 +159,17 @@ tide:
 branch-protection:
   orgs:
     kcp-dev:
+      protect: true
+      required_status_checks:
+        contexts:
+        - dco
+      restrictions:
+        users: []
+        teams:
+          - kcp-dev/kcp-admins
+      include:
+        - "^main$"
+
       repos:
         infra:
           protect: true
