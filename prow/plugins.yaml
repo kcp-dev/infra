@@ -30,6 +30,8 @@ config_updater:
       name: config
     prow/plugins.yaml:
       name: plugins
+    prow/labels.yaml:
+      name: label-config
     prow/jobs/**/*.yaml:
       name: job-config
       # makes it so we can have "jobs/foo/presubmits.yaml" and "jobs/bar/presubmits.yaml"
