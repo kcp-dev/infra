@@ -17,7 +17,7 @@ periodics:
         command:
         - label_sync
         args:
-        - --config=/etc/config/labels.yaml
+        - --config=/home/prow/go/src/github.com/kcp-dev/infra/prow/labels.yaml
         - --confirm=true
         - --orgs=kcp-dev
         - --token=/etc/oauth-token/secret
@@ -28,13 +28,7 @@ periodics:
         - name: oauth-token
           mountPath: /etc/oauth-token
           readOnly: true
-        - name: config
-          mountPath: /etc/config
-          readOnly: true
       volumes:
       - name: oauth-token
         secret:
           secretName: github-token
-      - name: config
-        configMap:
-          name: label-config
