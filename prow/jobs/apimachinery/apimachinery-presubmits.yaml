@@ -1,0 +1,21 @@
+presubmits:
+  kcp-dev/apimachinery:
+    - name: pull-apimachinery-validate-prow-yaml
+      always_run: true
+      decorate: true
+      clone_uri: "ssh://git@github.com/kcp-dev/apimachinery.git"
+      extra_refs:
+        - org: kcp-dev
+          repo: infra
+          base_ref: main
+          clone_uri: git@github.com:kcp-dev/infra.git
+      spec:
+        containers:
+          - image: gcr.io/k8s-prow/checkconfig:v20230522-3eb206f68f
+            command:
+              - checkconfig
+            args:
+              - -plugin-config=/home/prow/go/src/github.com/kcp-dev/infra/prow/plugins.yaml
+              - -config-path=/home/prow/go/src/github.com/kcp-dev/infra/prow/config.yaml
+              - -job-config-path=/home/prow/go/src/github.com/kcp-dev/infra/prow/jobs
+              - -prow-yaml-repo-name=$(REPO_OWNER)/$(REPO_NAME)
