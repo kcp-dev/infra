@@ -69,6 +69,18 @@ default:
       prowPlugin: cla
       addedBy: prow
     - color: e11d21
+      description: Indicates the PR's author has not signed the DCO.
+      name: 'dco-signoff: no'
+      target: prs
+      prowPlugin: dco
+      addedBy: prow
+    - color: bfe5bf
+      description: Indicates the PR's author has signed the DCO.
+      name: 'dco-signoff: yes'
+      target: prs
+      prowPlugin: dco
+      addedBy: prow
+    - color: e11d21
       description: Indicates that a PR should not merge because it touches files in blocked paths.
       name: do-not-merge/blocked-paths
       target: prs
