@@ -1,0 +1,40 @@
+---
+periodics:
+  - name: ci-infra-prow-labelsync
+    cron: "17 * * * *" # Every hour at 17 minutes past the hour
+    cluster: prow
+    decorate: true
+    labels:
+      app: label-sync
+    extra_refs:
+    - org: kcp-dev
+      repo: infra
+      base_ref: main
+      clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
+    spec:
+      containers:
+      - image: gcr.io/k8s-prow/label_sync:v20230523-2834e18241
+        command:
+        - label_sync
+        args:
+        - --config=/etc/config/labels.yaml
+        - --confirm=true
+        - --orgs=kcp-dev
+        - --token=/etc/oauth-token/secret
+        - --endpoint=http://ghproxy.prow.svc.cluster.local
+        - --endpoint=https://api.github.com
+        - --debug
+        volumeMounts:
+        - name: oauth-token
+          mountPath: /etc/oauth-token
+          readOnly: true
+        - name: config
+          mountPath: /etc/config
+          readOnly: true
+      volumes:
+      - name: oauth-token
+        secret:
+          secretName: github-token
+      - name: config
+        configMap:
+          name: label-config
