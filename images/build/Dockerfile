@@ -1,13 +1,15 @@
-FROM docker.io/library/golang:1.19.9 as download
+ARG GO_VERSION
+ARG K8S_VERSION
+
+FROM docker.io/library/golang:${GO_VERSION} as download
 
 WORKDIR /tmp
-ENV KUBECTL_VERSION="v1.26.3"
 
-RUN curl --fail -Lo kubectl https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl && \
+RUN curl --fail -Lo kubectl https://dl.k8s.io/release/${K8S_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x kubectl && \
     ./kubectl version --short --client
 
-FROM docker.io/library/golang:1.19.9
+FROM docker.io/library/golang:${GO_VERSION}
 
 COPY --from=download /tmp/kubectl /usr/local/bin/
 
