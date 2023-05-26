@@ -1,11 +1,14 @@
 ARG GO_VERSION
-ARG K8S_VERSION
 
 FROM docker.io/library/golang:${GO_VERSION} as download
 
+# this needs to be separate from the GO_VERSION arg above because otherwise
+# it is not in scope for usage in the RUN instructions below.
+ARG K8S_VERSION
+
 WORKDIR /tmp
 
-RUN curl --fail -Lo kubectl https://dl.k8s.io/release/${K8S_VERSION}/bin/linux/amd64/kubectl && \
+RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${K8S_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x kubectl && \
     ./kubectl version --short --client
 
