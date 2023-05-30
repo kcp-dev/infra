@@ -106,6 +106,8 @@ spec:
             - --cookie-secret=/etc/cookie/secret
             - --plugin-config=/etc/plugins/plugins.yaml
             - --kubeconfig=/etc/kubeconfigs/kubeconfig
+            - --oauth-url=/github-login
+            - --github-oauth-config-file=/etc/github-oauth/secret
           ports:
             - name: http
               containerPort: 8080
@@ -132,6 +134,9 @@ spec:
               readOnly: true
             - name: kubeconfig
               mountPath: /etc/kubeconfigs
+              readOnly: true
+            - name: github-oauth
+              mountPath: /etc/github-oauth
               readOnly: true
           livenessProbe:
             httpGet:
@@ -201,6 +206,9 @@ spec:
         - name: kubeconfig
           secret:
             secretName: kubeconfig
+        - name: github-oauth
+          secret:
+            secretName: github-oauth-app
       nodeSelector:
         kubermatic.io/stable: "true"
       tolerations:
