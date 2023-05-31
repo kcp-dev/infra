@@ -10,12 +10,6 @@ on:
     paths:
       - "images/build/*"
       - ".github/workflows/build-image.yaml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "images/build/*"
-      - ".github/workflows/build-image.yaml"
 
 jobs:
   build:
