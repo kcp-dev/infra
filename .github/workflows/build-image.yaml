@@ -48,4 +48,6 @@ jobs:
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ github.ref_name }}-buildx
           cache-to: type=gha,scope=${{ github.ref_name }}-buildx,mode=max
-          build-args: GO_VERSION=1.19.9,K8S_VERSION=1.26.3
+          build-args: |
+            GO_VERSION=1.19.9
+            K8S_VERSION=1.26.3
