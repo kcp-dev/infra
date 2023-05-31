@@ -10,6 +10,15 @@ on:
     paths:
       - "images/build/*"
       - ".github/workflows/build-image.yaml"
+  # run a test build on PRs that change the build image;
+  # no image is pushed since the 'Build and Push' step
+  # checks if the trigger is a pull request or not.
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "images/build/*"
+      - ".github/workflows/build-image.yaml"
 
 jobs:
   build:
@@ -18,6 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Append build image env variables
+        run: |
+          echo "$(cat images/build/env)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -34,9 +47,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/${{ github.repository_owner }}/infra/build
+            ghcr.io/${{ github.repository }}/build
           tags: |
-            type=semver,pattern={{version}},value=v1.19.9-1
+            type=semver,pattern={{version}},value=v${{ env.BUILD_IMAGE_TAG }}
 
       - name: Build and Push
         uses: docker/build-push-action@v4
@@ -49,5 +62,5 @@ jobs:
           cache-from: type=gha,scope=${{ github.ref_name }}-buildx
           cache-to: type=gha,scope=${{ github.ref_name }}-buildx,mode=max
           build-args: |
-            GO_VERSION=1.19.9
-            K8S_VERSION=1.26.3
+            GO_VERSION=${{ env.GO_IMAGE_VERSION }}
+            K8S_VERSION=${{ env.K8S_VERSION }}
