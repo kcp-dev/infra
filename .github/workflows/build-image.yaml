@@ -48,13 +48,15 @@ jobs:
         with:
           images: |
             ghcr.io/${{ github.repository }}/build
+          tags: |
+            type=semver,pattern={{version}},value=v${{ env.BUILD_IMAGE_TAG }}
 
       - name: Build and Push
         uses: docker/build-push-action@v4
         with:
           context: "{{defaultContext}}:images/build"
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository }}/build:${{ env.BUILD_IMAGE_TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
           cache-from: type=gha,scope=${{ github.ref_name }}-buildx
