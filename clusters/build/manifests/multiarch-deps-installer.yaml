@@ -1,0 +1,39 @@
+#
+# This DaemonSet installs the necessary dependencies for building multiarch
+# Docker images. To build for example an arm64 Docker image on an x86 machine,
+# qemu needs to emulate the ARM architecture. Also, Docker 19.03+ is required.
+#
+# Not having these dependencies preset results in errors like
+#
+#   process exited with error: fork/exec /bin/sh: no such file or directorysubprocess exited with status 1
+#   process exited with error: fork/exec /bin/sh: exec format errorsubprocess exited with status 1
+#
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: multiarch-deps-installer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: multiarch-deps-installer
+  template:
+    metadata:
+      labels:
+        app: multiarch-deps-installer
+    spec:
+      containers:
+        - name: multiarch
+          image: multiarch/qemu-user-static:5.2.0-2
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              echo "Configuring qemu..."
+              /register --reset -p yes
+              echo "Success. Sleeping forever..."
+              sleep infinity
+          securityContext:
+            privileged: true
