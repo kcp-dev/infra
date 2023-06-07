@@ -315,3 +315,20 @@ presets:
       - name: prow-kubeconfig
         secret:
           secretName: kubeconfig
+
+  ################################################################
+  # (prow-cluster only) username and password for GHCR
+
+  - labels:
+      preset-ghcr-credentials: "true"
+    env:
+      - name: KCP_GHCR_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: ghcr-credentials
+            key: username
+      - name: KCP_GHCR_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: ghcr-credentials
+            key: password
