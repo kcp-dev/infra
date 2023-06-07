@@ -29,6 +29,9 @@ kubectl apply --filename manifests/machinedeployment-worker.yaml
 echo "Installing Cluster Autoscaler..."
 kubectl apply --filename manifests/cluster-autoscaler.yaml
 
+echo "Installing qemu..."
+kubectl apply --filename manifests/multiarch-deps-installer.yaml
+
 ###########################################################
 # ensure these deployments are scheduled on the stable nodes, so
 # that when zero workers are running, these essential services still
