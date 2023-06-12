@@ -4,8 +4,8 @@ metadata:
   name: worker
   namespace: kube-system
   annotations:
-    cluster.k8s.io/cluster-api-autoscaler-node-group-min-size: "3"
-    cluster.k8s.io/cluster-api-autoscaler-node-group-max-size: "30"
+    cluster.k8s.io/cluster-api-autoscaler-node-group-min-size: "1"
+    cluster.k8s.io/cluster-api-autoscaler-node-group-max-size: "10"
 spec:
   # do not specify replica count, as its going to be dynamically altered
   # for our custom scale up/down solution
