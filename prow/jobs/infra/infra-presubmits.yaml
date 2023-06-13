@@ -60,3 +60,26 @@ presubmits:
           secret:
             secretName: github-token
 
+    - name: pull-infra-images-build
+      decorate: true
+      clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
+      # this forces to bump the image tag in this file to get a
+      # new image build
+      run_if_changed: '^images/build/env$'
+      labels:
+        preset-goproxy: "true"
+      spec:
+        containers:
+          - image: quay.io/containers/buildah:v1.30.0
+            command:
+              - images/build/hack/build-image.sh
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            env:
+              - name: DRY_RUN
+                value: '1'
+            resources:
+              requests:
+                memory: 1Gi
+                cpu: 1
