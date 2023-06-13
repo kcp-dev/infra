@@ -41,3 +41,27 @@ postsubmits:
                 value: /etc/prow/kubeconfig/kubeconfig
               - name: KUBE_CONTEXT
                 value: default
+
+    - name: post-infra-publish-images-build
+      decorate: true
+      clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
+      cluster: prow # GHCR credentials are only available here
+      labels:
+        preset-ghcr-credentials: "true"
+      branches:
+        - ^main$
+      # this forces to bump the image tag in this file to get a
+      # new image build
+      run_if_changed: '^images/build/env$'
+      spec:
+        containers:
+          - image: quay.io/containers/buildah:v1.30.0
+            command:
+              - images/build/hack/build-image.sh
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                cpu: 2
+                memory: 3Gi
