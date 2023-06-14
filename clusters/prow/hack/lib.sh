@@ -5,12 +5,15 @@ create_job_config_configmap() {
     --dry-run=client \
     --output=json > job-config.json
 
-  for filename in $prowDir/jobs/*/*.yaml; do
-    repo="$(basename "$(dirname "$filename")")"
+  for filename in $prowDir/jobs/*/*/*.yaml; do
+    directory="$(dirname "$filename")"
+    repo="$(basename "$directory")"
+    directory="$(dirname "$directory")"
+    org="$(basename "$directory")"
     basename="$(basename "$filename")"
 
     # mimic exactly how prow's config_updater names the keys
-    key="prow-jobs-$repo-$basename"
+    key="prow-jobs-$org-$repo-$basename"
 
     # yq is terrible at reading arbitrary files
     jq \
