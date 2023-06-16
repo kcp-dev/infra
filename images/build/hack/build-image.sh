@@ -39,6 +39,11 @@ cd ./images/build
 # read configuration file for build image
 source ./env
 
+# download kind image
+echo "Downloading kindest image to embed into image ..."
+buildah pull docker.io/kindest/node:v${K8S_VERSION}
+buildah push --format docker docker.io/kindest/node:v${K8S_VERSION} docker-archive:kindest.tar:kindest/node:v${K8S_VERSION}
+
 image="$repository:${BUILD_IMAGE_TAG}"
 echo "Building container image $image ..."
 
@@ -46,14 +51,15 @@ echo "Building container image $image ..."
 for arch in $architectures; do
   fullTag="$image-$arch"
 
-  echo "Building $version-$arch ..."
+  echo "Building $image-$arch ..."
   buildah build-using-dockerfile \
     --file Dockerfile \
     --tag "$fullTag" \
     --arch "$arch" \
     --override-arch "$arch" \
     --build-arg "GO_VERSION=${GO_IMAGE_VERSION}" \
-    --build-arg "K8S_VERSION=${K8S_VERSION}"
+    --build-arg "K8S_VERSION=${K8S_VERSION}" \
+    --build-arg "KIND_VERSION=${KIND_VERSION}" \
     --format=docker \
     .
 done
