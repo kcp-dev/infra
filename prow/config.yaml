@@ -28,7 +28,7 @@ plank:
     'kcp-dev/kcp-dev.github.io': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
     'kcp-dev/kcp.io': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
     'kcp-dev/logicalcluster': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/edge-mc': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
+    'kubestellar/kubestellar': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
 
   job_url_prefix_config:
     '*': https://prow.kcp.k8c.io/view/
@@ -47,7 +47,7 @@ plank:
     'kcp-dev/kcp-dev.github.io': 'https://public-prow.kcp.k8c.io/view/'
     'kcp-dev/kcp.io': 'https://public-prow.kcp.k8c.io/view/'
     'kcp-dev/logicalcluster': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/edge-mc': 'https://public-prow.kcp.k8c.io/view/'
+    'kubestellar/kubestellar': 'https://public-prow.kcp.k8c.io/view/'
 
   default_decoration_config_entries:
     # default config
@@ -143,7 +143,7 @@ plank:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
           bucket: "s3://prow-public-data"
-    - repo: "kcp-dev/edge-mc"
+    - repo: "kubestellar/kubestellar"
       config:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
@@ -222,6 +222,7 @@ tide:
 
   merge_method:
     kcp-dev: merge
+    kubestellar: merge
 
   queries:
     # no release notes
@@ -239,7 +240,7 @@ tide:
         - kcp-dev/infra
         - kcp-dev/kcp-dev.github.io
         - kcp-dev/kcp.io
-        - kcp-dev/edge-mc
+        - kubestellar/kubestellar
       labels:
         - lgtm
         - approved
@@ -278,6 +279,18 @@ branch-protection:
         users: []
         teams:
           - kcp-dev/kcp-admins
+      include:
+        - "^main$"
+
+    kubestellar:
+      protect: true
+      required_status_checks:
+        contexts:
+        - dco
+      restrictions:
+        users: []
+        teams:
+          - kubestellar/kubestellar-admins
       include:
         - "^main$"
 
