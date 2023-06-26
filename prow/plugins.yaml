@@ -84,6 +84,7 @@ plugins:
       - retitle         # /retitle allows to edit the title of a PR (e.g. to remove WIP, when people are on vacation)
       - size
       - skip            # /skip cleans up commit statuses of non-blocking presubmits on PRs
+      - transfer-issue  # /transfer[-issue] <repo name in same org> transfers GitHub issue to dest. repo
       - trigger
       - verify-owners   # verifies format of OWNERS file
       - wip
