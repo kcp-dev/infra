@@ -1,10 +1,12 @@
 # the tag used for the final image. Update the suffix when you want
 # a new version of the image to be built.
-BUILD_IMAGE_TAG=1.20.5-1
+BUILD_IMAGE_TAG=1.20.6-1
 # the Go version used for the images.
-GO_IMAGE_VERSION=1.20.5
+GO_IMAGE_VERSION=1.20.6
 # the Kubernetes version that is used to determine which kubectl
-# to install and which kind node image to pre-load into the image.
-K8S_VERSION=1.27.3
+# to install into the image.
+K8S_VERSION=1.27.4
 # the kind version installed into this image.
-KIND_VERSION=0.18.0
+KIND_VERSION=0.20.0
+# the node image to include in our build image (must match the kind version).
+KINDEST_NODE_IMAGE=kindest/node:v1.27.3@sha256:3966ac761ae0136263ffdb6cfd4db23ef8a83cba8a463690e98317add2c9ba72

@@ -41,8 +41,8 @@ source ./env
 
 # download kind image
 echo "Downloading kindest image to embed into image ..."
-buildah pull docker.io/kindest/node:v${K8S_VERSION}
-buildah push --format docker docker.io/kindest/node:v${K8S_VERSION} docker-archive:kindest.tar:kindest/node:v${K8S_VERSION}
+buildah pull docker.io/${KINDEST_NODE_IMAGE}
+buildah push --format docker docker.io/${KINDEST_NODE_IMAGE} docker-archive:kindest.tar:${KINDEST_NODE_IMAGE}
 
 image="$repository:${BUILD_IMAGE_TAG}"
 echo "Building container image $image ..."
