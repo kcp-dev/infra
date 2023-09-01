@@ -5,6 +5,6 @@ BUILD_IMAGE_TAG=1.20.7-1
 GO_IMAGE_VERSION=1.20.7
 # the Kubernetes version that is used to determine which kubectl 
 # to install and which kind node image to pre-load into the image.
-K8S_VERSION=1.28.1
+K8S_VERSION=1.28.0
 # the kind version installed into this image.
 KIND_VERSION=0.20.0
