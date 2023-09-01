@@ -11,7 +11,7 @@ WORKDIR /tmp
 
 RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${K8S_VERSION}/bin/linux/$(dpkg --print-architecture)/kubectl && \
     chmod +x kubectl && \
-    ./kubectl version --short --client
+    ./kubectl version --client
 
 RUN curl --fail -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-$(dpkg --print-architecture) && \
     chmod +x kind && \
