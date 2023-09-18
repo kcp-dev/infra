@@ -6,8 +6,13 @@ FROM docker.io/library/golang:${GO_VERSION} as download
 # it is not in scope for usage in the RUN instructions below.
 ARG K8S_VERSION
 ARG KIND_VERSION
+ARG HELM_VERSION
 
 WORKDIR /tmp
+
+RUN curl --fail -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-$(dpkg --print-architecture).tar.gz | tar -xzO linux-$(dpkg --print-architecture)/helm > helm && \
+    chmod +x helm && \
+    ./helm version --short
 
 RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${K8S_VERSION}/bin/linux/$(dpkg --print-architecture)/kubectl && \
     chmod +x kubectl && \
@@ -24,6 +29,7 @@ VOLUME /docker-graph
 
 COPY --from=download /tmp/kubectl /usr/local/bin/
 COPY --from=download /tmp/kind /usr/local/bin/
+COPY --from=download /tmp/helm /usr/local/bin/
 
 COPY start-docker.sh /usr/local/bin/
 # this pre-loads the kindest/node image so it can be loaded via docker

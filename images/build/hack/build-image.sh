@@ -60,6 +60,7 @@ for arch in $architectures; do
     --build-arg "GO_VERSION=${GO_IMAGE_VERSION}" \
     --build-arg "K8S_VERSION=${K8S_VERSION}" \
     --build-arg "KIND_VERSION=${KIND_VERSION}" \
+    --build-arg "HELM_VERSION=${HELM_VERSION}" \
     --format=docker \
     .
 done
