@@ -13,7 +13,7 @@ latestProwVersion="$(curl -s https://raw.githubusercontent.com/kubernetes/test-i
 echo "Current Prow version: $currentProwVersion"
 echo " Latest Prow version: $latestProwVersion"
 
-find . -name '*.yaml' -exec sed -i "s/$currentProwVersion/$latestProwVersion/g" {} \;
+find ../../ -name '*.yaml' -exec sed -i "s/$currentProwVersion/$latestProwVersion/g" {} \;
 
 curl -so manifests/prowjob-crd.yaml https://raw.githubusercontent.com/kubernetes/test-infra/master/config/prow/cluster/prowjob-crd/prowjob_customresourcedefinition.yaml
 
