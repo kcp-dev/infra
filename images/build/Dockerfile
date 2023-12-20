@@ -7,6 +7,7 @@ FROM docker.io/library/golang:${GO_VERSION} as download
 ARG K8S_VERSION
 ARG KIND_VERSION
 ARG HELM_VERSION
+ARG KUBECONFORM_VERSION
 
 WORKDIR /tmp
 
@@ -21,6 +22,10 @@ RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${K8S_VERSION}/bin/linux/
 RUN curl --fail -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-$(dpkg --print-architecture) && \
     chmod +x kind && \
     ./kind version
+
+RUN curl --fail -L https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-$(dpkg --print-architecture).tar.gz | tar -xzO kubeconform-linux-$(dpkg --print-architecture)/kubeconform > kubeconform && \
+    chmod +x kubeconform && \
+    ./kubeconform -v
 
 FROM docker.io/library/golang:${GO_VERSION}
 
