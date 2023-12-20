@@ -6,6 +6,7 @@ This directory contains files to build `ghcr.io/kcp-dev/infra/build`, the base i
 -  `kind` (and pre-loaded `/kindest.tar` that can be loaded into docker to have `kindest/node` available)
 - `go`
 - `git`, `jq` and `curl`
+- `kubeconform`
 
 ## Usage
 
