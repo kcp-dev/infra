@@ -23,7 +23,7 @@ RUN curl --fail -Lo kind https://github.com/kubernetes-sigs/kind/releases/downlo
     chmod +x kind && \
     ./kind version
 
-RUN curl --fail -L https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-$(dpkg --print-architecture).tar.gz | tar -xzO kubeconform-linux-$(dpkg --print-architecture)/kubeconform > kubeconform && \
+RUN curl --fail -L https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-$(dpkg --print-architecture).tar.gz | tar -xzO kubeconform > kubeconform && \
     chmod +x kubeconform && \
     ./kubeconform -v
 
