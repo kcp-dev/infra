@@ -35,6 +35,7 @@ VOLUME /docker-graph
 COPY --from=download /tmp/kubectl /usr/local/bin/
 COPY --from=download /tmp/kind /usr/local/bin/
 COPY --from=download /tmp/helm /usr/local/bin/
+COPY --from=download /tmp/kubeconform /usr/local/bin/
 
 COPY start-docker.sh /usr/local/bin/
 # this pre-loads the kindest/node image so it can be loaded via docker
