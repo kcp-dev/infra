@@ -19,6 +19,26 @@ default:
       name: area/dependency
       target: both
       addedBy: label
+    - color: cc7a00
+      description: Issues or PRs related to CLI changes
+      name: area/cli
+      target: both
+      addedBy: label
+    - color: 1400cc
+      description: Issues or PRs related to api-lifecycle changes
+      name: area/api-lifecycle
+      target: both
+      addedBy: label
+    - color: 00b8cc
+      description: Issues or PRs related to core changes
+      name: area/core
+      target: both
+      addedBy: label
+    - color: b8cc00
+      description: Issues or PRs related to sharding changes
+      name: area/sharding
+      target: both
+      addedBy: label
     - color: 0ffa16
       description: Indicates a PR has been approved by an approver from all required OWNERS files.
       name: approved
