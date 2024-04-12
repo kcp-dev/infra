@@ -1,0 +1,108 @@
+periodics:
+  - name: periodic-infra-github-stale-issues
+    interval: 12h
+    cluster: prow
+    annotations:
+      description: Adds lifecycle/stale to issues after 90d of inactivity
+    hidden: true
+    decorate: true
+    extra_refs:
+      - org: kcp-dev
+        repo: infra
+        base_ref: main
+        clone_uri: "git@github.com:kcp-dev/infra.git"
+    spec:
+      containers:
+        - image: gcr.io/k8s-prow/commenter:v20230523-2834e18241
+          command:
+            - ./hack/ci/github-decay-issues.sh
+          env:
+            - name: KIND
+              value: stale
+            - name: CONFIRM
+              value: 'yes'
+            - name: GITHUB_TOKEN_FILE
+              value: /etc/token/token
+          volumeMounts:
+            - name: token
+              mountPath: /etc/token
+          resources:
+            requests:
+              cpu: 500m
+              memory: 128Mi
+      volumes:
+        - name: token
+          secret:
+            secretName: github-token
+
+  - name: periodic-infra-github-rotten-issues
+    interval: 12h
+    cluster: prow
+    annotations:
+      description: Adds lifecycle/rotten to stale issues after 30d of inactivity
+    hidden: true
+    decorate: true
+    extra_refs:
+      - org: kcp-dev
+        repo: infra
+        base_ref: main
+        clone_uri: "git@github.com:kcp-dev/infra.git"
+    spec:
+      containers:
+        - image: gcr.io/k8s-prow/commenter:v20230523-2834e18241
+          command:
+            - ./hack/ci/github-decay-issues.sh
+          env:
+            - name: KIND
+              value: rotten
+            - name: CONFIRM
+              value: 'yes'
+            - name: GITHUB_TOKEN_FILE
+              value: /etc/token/token
+          volumeMounts:
+            - name: token
+              mountPath: /etc/token
+          resources:
+            requests:
+              cpu: 500m
+              memory: 128Mi
+      volumes:
+        - name: token
+          secret:
+            secretName: github-token
+
+  - name: periodic-infra-github-close-issues
+    interval: 12h
+    cluster: prow
+    annotations:
+      description: Closes rotten issues after 30d of inactivity
+    hidden: true
+    decorate: true
+    extra_refs:
+      - org: kcp-dev
+        repo: infra
+        base_ref: main
+        clone_uri: "git@github.com:kcp-dev/infra.git"
+    spec:
+      containers:
+        - image: gcr.io/k8s-prow/commenter:v20230523-2834e18241
+          command:
+            - ./hack/ci/github-decay-issues.sh
+          env:
+            - name: KIND
+              value: close
+            - name: CONFIRM
+              value: 'yes'
+            - name: GITHUB_TOKEN_FILE
+              value: /etc/token/token
+          volumeMounts:
+            - name: token
+              mountPath: /etc/token
+          resources:
+            requests:
+              cpu: 500m
+              memory: 128Mi
+      volumes:
+        - name: token
+          secret:
+            secretName: github-token
