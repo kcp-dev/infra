@@ -2,7 +2,7 @@ variable "oci_tenant_ocid" {
   type = string
 }
 
-variable "oci_compartment_id" {
+variable "oci_compartment_ocid" {
   type = string
 }
 

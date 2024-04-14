@@ -4,3 +4,8 @@ provider "oci" {
   private_key  = ""
   region       = ""
 }
+
+data "oci_identity_availability_domains" "availability_domains" {
+  compartment_id = var.oci_tenant_ocid
+}
+

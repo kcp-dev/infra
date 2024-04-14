@@ -3,7 +3,7 @@ resource "oci_containerengine_cluster" "prow" {
   type               = "TODO"
   kubernetes_version = "v1.29.1"
 
-  compartment_id = var.oci_compartment_id
+  compartment_id = var.oci_compartment_ocid
   vcn_id         = "TODO"
 
   cluster_pod_network_options {
