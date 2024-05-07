@@ -1,8 +1,6 @@
 provider "oci" {
-  tenancy_ocid = ""
-  user_ocid    = ""
-  private_key  = ""
-  region       = ""
+  tenancy_ocid = var.oci_tenant_ocid
+  region       = var.oci_region
 }
 
 data "oci_identity_availability_domains" "availability_domains" {

@@ -6,6 +6,7 @@ variable "oci_compartment_ocid" {
   type = string
 }
 
+/*
 variable "oci_user_ocid" {
   type = string
 }
@@ -14,7 +15,12 @@ variable "oci_private_key" {
   type      = string
   sensitive = true
 }
+*/
 
 variable "oci_region" {
+  type = string
+}
+
+variable "node_pool_ssh_public_key" {
   type = string
 }
