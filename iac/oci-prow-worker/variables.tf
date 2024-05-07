@@ -24,3 +24,13 @@ variable "oci_region" {
 variable "node_pool_ssh_public_key" {
   type = string
 }
+
+variable "node_pool_worker_size" {
+  type    = number
+  default = 3
+}
+
+variable "kubernetes_version" {
+  type = string
+  default = "v1.29.1"
+}

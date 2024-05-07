@@ -5,4 +5,17 @@ terraform {
       version = "5.36.0"
     }
   }
+
+  # make sure to set AWS_ENDPOINT_URL_S3 to 'https://<object namespace>.compat.objectstorage.us-sanjose-1.oraclecloud.com'.
+  backend "s3" {
+    bucket = "kcp-opentofu-state"
+    region = "us-sanjose-1"
+    key    = "ci-prow-worker/tf.tfstate"
+
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true
+    use_path_style              = true
+    skip_metadata_api_check     = true
+  }
 }
