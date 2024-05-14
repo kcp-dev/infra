@@ -50,7 +50,7 @@ cherry_pick_unapproved:
     To merge this cherry pick, it must first be approved (`/lgtm` + `/approve`) by the relevant OWNERS.
 
 dco:
-  '*':
+  "*":
     skip_dco_check_for_members: true
 
 label:
@@ -75,18 +75,18 @@ plugins:
       - branchcleaner
       - dco
       - hold
-      - label           # adds or removes labels of the type area/*, kind/*, etc
+      - label # adds or removes labels of the type area/*, kind/*, etc
       - lgtm
-      - lifecycle       # allows to close or open issues for non-members, mark issues and PRs as stale, etc
+      - lifecycle # allows to close or open issues for non-members, mark issues and PRs as stale, etc
       - milestoneapplier
       - override
-      - owners-label    # automatically adds labels to PRs based on the files they touch; labels are mentioned in the OWNERS file
-      - retitle         # /retitle allows to edit the title of a PR (e.g. to remove WIP, when people are on vacation)
+      - owners-label # automatically adds labels to PRs based on the files they touch; labels are mentioned in the OWNERS file
+      - retitle # /retitle allows to edit the title of a PR (e.g. to remove WIP, when people are on vacation)
       - size
-      - skip            # /skip cleans up commit statuses of non-blocking presubmits on PRs
-      - transfer-issue  # /transfer[-issue] <repo name in same org> transfers GitHub issue to dest. repo
+      - skip # /skip cleans up commit statuses of non-blocking presubmits on PRs
+      - transfer-issue # /transfer[-issue] <repo name in same org> transfers GitHub issue to dest. repo
       - trigger
-      - verify-owners   # verifies format of OWNERS file
+      - verify-owners # verifies format of OWNERS file
       - wip
 
   kcp-dev/kcp:
@@ -94,6 +94,10 @@ plugins:
       - release-note
 
   kcp-dev/logicalcluster:
+    plugins:
+      - release-note
+
+  kcp-dev/generic-controlplane:
     plugins:
       - release-note
 
@@ -108,17 +112,17 @@ plugins:
       - branchcleaner
       - dco
       - hold
-      - label           # adds or removes labels of the type area/*, kind/*, etc
+      - label # adds or removes labels of the type area/*, kind/*, etc
       - lgtm
-      - lifecycle       # allows to close or open issues for non-members, mark issues and PRs as stale, etc
+      - lifecycle # allows to close or open issues for non-members, mark issues and PRs as stale, etc
       - milestoneapplier
       - override
-      - owners-label    # automatically adds labels to PRs based on the files they touch; labels are mentioned in the OWNERS file
-      - retitle         # /retitle allows to edit the title of a PR (e.g. to remove WIP, when people are on vacation)
+      - owners-label # automatically adds labels to PRs based on the files they touch; labels are mentioned in the OWNERS file
+      - retitle # /retitle allows to edit the title of a PR (e.g. to remove WIP, when people are on vacation)
       - size
-      - skip            # /skip cleans up commit statuses of non-blocking presubmits on PRs
+      - skip # /skip cleans up commit statuses of non-blocking presubmits on PRs
       - trigger
-      - verify-owners   # verifies format of OWNERS file
+      - verify-owners # verifies format of OWNERS file
       - wip
 
 external_plugins:
