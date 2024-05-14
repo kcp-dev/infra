@@ -12,42 +12,42 @@ plank:
   pod_unscheduled_timeout: 60m
 
   report_templates:
-    '*': '[Full PR test history](https://prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/apiextensions-apiserver': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/apimachinery': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/awesome-kcp': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/client-go': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/code-generator': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/controller-runtime': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/controller-runtime-example': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/enhancements': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/friends': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/helm-charts': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/infra': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/kcp': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/kcp-dev.github.io': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/kcp.io': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kcp-dev/logicalcluster': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
-    'kubestellar/kubestellar': '[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})'
+    "*": "[Full PR test history](https://prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/apiextensions-apiserver": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/apimachinery": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/awesome-kcp": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/client-go": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/code-generator": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/controller-runtime": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/controller-runtime-example": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/enhancements": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/friends": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/helm-charts": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/infra": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/kcp": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/kcp-dev.github.io": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/kcp.io": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/logicalcluster": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kubestellar/kubestellar": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
 
   job_url_prefix_config:
-    '*': https://prow.kcp.k8c.io/view/
-    'kcp-dev/apiextensions-apiserver': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/apimachinery': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/awesome-kcp': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/client-go': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/code-generator': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/controller-runtime': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/controller-runtime-example': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/enhancements': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/friends': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/helm-charts': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/infra': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/kcp': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/kcp-dev.github.io': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/kcp.io': 'https://public-prow.kcp.k8c.io/view/'
-    'kcp-dev/logicalcluster': 'https://public-prow.kcp.k8c.io/view/'
-    'kubestellar/kubestellar': 'https://public-prow.kcp.k8c.io/view/'
+    "*": https://prow.kcp.k8c.io/view/
+    "kcp-dev/apiextensions-apiserver": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/apimachinery": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/awesome-kcp": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/client-go": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/code-generator": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/controller-runtime": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/controller-runtime-example": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/enhancements": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/friends": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/helm-charts": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/infra": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/kcp": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/kcp-dev.github.io": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/kcp.io": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/logicalcluster": "https://public-prow.kcp.k8c.io/view/"
+    "kubestellar/kubestellar": "https://public-prow.kcp.k8c.io/view/"
 
   default_decoration_config_entries:
     # default config
@@ -143,6 +143,11 @@ plank:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
           bucket: "s3://prow-public-data"
+    - repo: "kcp-dev/generic-controlplane"
+      config:
+        s3_credentials_secret: "s3-credentials-public"
+        gcs_configuration:
+          bucket: "s3://prow-public-data"
     - repo: "kubestellar/kubestellar"
       config:
         s3_credentials_secret: "s3-credentials-public"
@@ -151,7 +156,7 @@ plank:
 
 in_repo_config:
   enabled:
-    '*': true
+    "*": true
 
 sinker:
   # How often sinker resyncs, defaults to 1h
@@ -167,7 +172,7 @@ deck:
   # repositories hidden in public-prow, but internal prow ignores this list and shows all repos
   hidden_repos: []
   rerun_auth_configs:
-    '*':
+    "*":
       allow_anyone: true
   spyglass:
     # # Configuring these will make an "Artifacts" link appear on the Spyglass page, linking
@@ -196,7 +201,7 @@ deck:
           config:
             highlight_regexes:
               - timed out
-              - 'ERROR'
+              - "ERROR"
               - (FAIL|Failure \[)\b
               - panic\b
               - ^E\d{4} \d\d:\d\d:\d\d\.\d\d\d]
@@ -204,7 +209,7 @@ deck:
               - no more retries left\.
               - ^Retry [0-9]+\/[0-9]+ exited [^0], retrying in [0-9]+ seconds
               - npm ERR!
-              - 'WARNING: DATA RACE'
+              - "WARNING: DATA RACE"
       - required_files:
           - artifacts/junit.*\.xml
         lens:
@@ -218,7 +223,7 @@ github_reporter:
 
 tide:
   pr_status_base_urls:
-    '*': https://prow.kcp.k8c.io/pr
+    "*": https://prow.kcp.k8c.io/pr
 
   merge_method:
     kcp-dev: merge
@@ -245,7 +250,7 @@ tide:
         - lgtm
         - approved
       missingLabels:
-        - 'dco-signoff: no'
+        - "dco-signoff: no"
         - do-not-merge
         - do-not-merge/hold
         - do-not-merge/invalid-owners-file
@@ -256,11 +261,12 @@ tide:
     - repos:
         - kcp-dev/kcp
         - kcp-dev/logicalcluster
+        - kcp-dev/generic-controlplane
       labels:
         - lgtm
         - approved
       missingLabels:
-        - 'dco-signoff: no'
+        - "dco-signoff: no"
         - do-not-merge
         - do-not-merge/hold
         - do-not-merge/invalid-owners-file
@@ -274,7 +280,7 @@ branch-protection:
       protect: true
       required_status_checks:
         contexts:
-        - dco
+          - dco
       restrictions:
         users: []
         teams:
@@ -286,7 +292,7 @@ branch-protection:
       protect: true
       required_status_checks:
         contexts:
-        - dco
+          - dco
       restrictions:
         users: []
         teams:
