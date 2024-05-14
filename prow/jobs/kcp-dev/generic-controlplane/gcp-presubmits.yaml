@@ -1,0 +1,21 @@
+presubmits:
+  kcp-dev/generic-controlplane:
+    - name: pull-gcp-validate-prow-yaml
+      always_run: true
+      decorate: true
+      clone_uri: "ssh://git@github.com/kcp-dev/generic-controlplane.git"
+      extra_refs:
+        - org: kcp-dev
+          repo: infra
+          base_ref: main
+          clone_uri: git@github.com:kcp-dev/infra.git
+      spec:
+        containers:
+          - image: gcr.io/k8s-prow/checkconfig:v20230919-a4926a4d02
+            command:
+              - checkconfig
+            args:
+              - -plugin-config=/home/prow/go/src/github.com/kcp-dev/infra/prow/plugins.yaml
+              - -config-path=/home/prow/go/src/github.com/kcp-dev/infra/prow/config.yaml
+              - -job-config-path=/home/prow/go/src/github.com/kcp-dev/infra/prow/jobs
+              - -prow-yaml-repo-name=$(REPO_OWNER)/$(REPO_NAME)
