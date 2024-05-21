@@ -1,5 +1,5 @@
 postsubmits:
-  kcp-dev/kcp:
+  kcp-dev/generic-controlplane:
     - name: post-gcp-publish-image
       decorate: true
       clone_uri: "https://github.com/kcp-dev/generic-controlplane"
