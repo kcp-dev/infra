@@ -34,3 +34,13 @@ variable "kubernetes_version" {
   type = string
   default = "v1.29.1"
 }
+
+variable "oci_config_file_profile" {
+  type = string
+  default = "DEFAULT"
+}
+
+variable "oci_auth_type" {
+  type = string
+  default = "SecurityToken"
+}
