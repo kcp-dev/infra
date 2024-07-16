@@ -2,8 +2,25 @@ resource "oci_containerengine_cluster" "prow" {
   name               = "oci-prow-worker"
   kubernetes_version = var.kubernetes_version
 
+  cluster_pod_network_options {
+    cni_type = "OCI_VCN_IP_NATIVE"
+  }
+
+  endpoint_config {
+    is_public_ip_enabled = true
+    subnet_id            = oci_core_subnet.prow_worker_cluster.id
+  }
+
+  options {
+    service_lb_subnet_ids = [oci_core_subnet.prow_worker_cluster.id]
+  }
+
   compartment_id = var.oci_compartment_ocid
   vcn_id         = oci_core_vcn.prow.id
+}
+
+data "oci_containerengine_cluster_kube_config" "prow" {
+  cluster_id = oci_containerengine_cluster.prow.id
 }
 
 resource "oci_containerengine_node_pool" "prow_worker" {
@@ -39,8 +56,13 @@ resource "oci_containerengine_node_pool" "prow_worker" {
       for_each = data.oci_identity_availability_domains.availability_domains.availability_domains
       content {
         availability_domain = placement_configs.value.name
-        subnet_id           = oci_core_subnet.prow_worker_cluster[placement_configs.key].id
+        subnet_id           = oci_core_subnet.prow_worker_nodes.id
       }
+    }
+
+    node_pool_pod_network_option_details {
+      cni_type       = "OCI_VCN_IP_NATIVE"
+      pod_subnet_ids = [oci_core_subnet.prow_worker_nodes.id]
     }
   }
 }

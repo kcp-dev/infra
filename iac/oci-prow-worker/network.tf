@@ -22,15 +22,25 @@ resource "oci_core_route_table" "prow_worker" {
   }
 }
 
-resource "oci_core_subnet" "prow_worker_cluster" {
-  count = length(data.oci_identity_availability_domains.availability_domains.availability_domains)
-
-  availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[count.index].name
-  cidr_block          = "10.0.${20 + count.index}.0/24"
+resource "oci_core_subnet" "prow_worker_nodes" {
+  availability_domain = null
+  cidr_block          = "10.0.64.0/18"
   compartment_id      = var.oci_compartment_ocid
   vcn_id              = oci_core_vcn.prow.id
 
   security_list_ids = [oci_core_vcn.prow.default_security_list_id]
   route_table_id    = oci_core_route_table.prow_worker.id
-  display_name      = "Prow Cluster Subnet ${count.index}"
+  display_name      = "Prow Nodes/Pods Subnet"
+}
+
+resource "oci_core_subnet" "prow_worker_cluster" {
+  availability_domain = null
+  cidr_block          = "10.0.10.0/24"
+  compartment_id      = var.oci_compartment_ocid
+  vcn_id              = oci_core_vcn.prow.id
+
+  security_list_ids = [oci_core_vcn.prow.default_security_list_id]
+  route_table_id    = oci_core_route_table.prow_worker.id
+  dhcp_options_id   = oci_core_vcn.prow.default_dhcp_options_id
+  display_name      = "Prow Cluster Subnet"
 }
