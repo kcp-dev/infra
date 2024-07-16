@@ -31,16 +31,16 @@ variable "node_pool_worker_size" {
 }
 
 variable "kubernetes_version" {
-  type = string
+  type    = string
   default = "v1.29.1"
 }
 
 variable "oci_config_file_profile" {
-  type = string
+  type    = string
   default = "DEFAULT"
 }
 
 variable "oci_auth_type" {
-  type = string
+  type    = string
   default = "SecurityToken"
 }
