@@ -12,7 +12,7 @@ The following environment variables are required before running any `make` targe
 
 ## Running terraform
 
-Easiest way to run terraform locally is to create a `.env` file with the required environment variables and then run `make` commands. For example:
+Easiest way to run terraform locally is to create a `.env` file with the required environment variables and then run `make` commands. For example, create a file `.env` (or see [.env.example](./.env.example)):
 
 ```bash
 export AWS_ACCESS_KEY_ID=xxxxxxxxxxxxxxx
@@ -33,5 +33,7 @@ oci_config_file_profile  = "KCP"
 ```
 
 Install `oci` cli and run `oci session authenticate` to get the `oci_config_file` and `oci_profile` values.
+
+Set up environment variables by running `source .env`.
 
 Then run `make init` and `make plan` to see the changes that will be applied. If everything looks good, run `make apply`.
