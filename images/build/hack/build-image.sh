@@ -32,7 +32,7 @@ EOF
 fi
 
 repository=ghcr.io/kcp-dev/infra/build
-architectures="amd64"
+architectures="amd64 arm64"
 
 cd ./images/build
 

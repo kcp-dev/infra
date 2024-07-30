@@ -1,14 +1,14 @@
 # the tag used for the final image. Update the suffix when you want
 # a new version of the image to be built.
-BUILD_IMAGE_TAG=1.22.2-1
+BUILD_IMAGE_TAG=1.22.5-1
 # the Go version used for the images.
-GO_IMAGE_VERSION=1.22.2
+GO_IMAGE_VERSION=1.22.5
 # the Kubernetes version that is used to determine which kubectl
 # to install and which kind node image to pre-load into the image.
-K8S_VERSION=1.28.0
+K8S_VERSION=1.30.0
 # the kind version installed into this image.
 KIND_VERSION=0.20.0
 # the Helm version installed into this image.
-HELM_VERSION=3.12.3
+HELM_VERSION=3.15.3
 # the kubeconform version installed into this image.
-KUBECONFORM_VERSION=0.6.4
+KUBECONFORM_VERSION=0.6.6
