@@ -1,6 +1,6 @@
 ARG GO_VERSION
 
-FROM docker.io/library/golang:${GO_VERSION} as download
+FROM --platform=${BUILDPLATFORM} docker.io/library/golang:${GO_VERSION} as download
 
 # this needs to be separate from the GO_VERSION arg above because otherwise
 # it is not in scope for usage in the RUN instructions below.
