@@ -9,6 +9,6 @@ K8S_VERSION=1.30.0
 # the kind version installed into this image.
 KIND_VERSION=0.20.0
 # the Helm version installed into this image.
-HELM_VERSION=3.15.3
+HELM_VERSION=3.16.3
 # the kubeconform version installed into this image.
 KUBECONFORM_VERSION=0.6.6
