@@ -1,6 +1,6 @@
 presubmits:
   kcp-dev/kcp-operator:
-    - name: pull-kcp-validate-prow-yaml
+    - name: pull-kcp-operator-validate-prow-yaml
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/kcp-operator.git"
