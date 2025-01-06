@@ -25,6 +25,7 @@ presubmits:
       cluster: prow # GHCR credentials are only available here
       labels:
         preset-ghcr-credentials: "true"
+      always_run: false
       trigger: "/build-image"
       spec:
         containers:
