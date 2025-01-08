@@ -34,15 +34,15 @@ fi
 repository=ghcr.io/kcp-dev/infra/build
 architectures="amd64 arm64"
 
-cd ./images/build
+cd images/build
 
 # read configuration file for build image
 source ./env
 
 # download kind image
 echo "Downloading kindest image to embed into image ..."
-buildah pull docker.io/kindest/node:v${K8S_VERSION}
-buildah push --format docker docker.io/kindest/node:v${K8S_VERSION} docker-archive:kindest.tar:kindest/node:v${K8S_VERSION}
+buildah pull docker.io/${KINDEST_IMAGE}
+buildah push --format docker docker.io/${KINDEST_IMAGE} docker-archive:kindest.tar
 
 image="$repository:${BUILD_IMAGE_TAG}"
 echo "Building container image $image ..."
@@ -57,12 +57,8 @@ for arch in $architectures; do
     --tag "$fullTag" \
     --arch "$arch" \
     --override-arch "$arch" \
-    --build-arg "GO_VERSION=${GO_IMAGE_VERSION}" \
-    --build-arg "K8S_VERSION=${K8S_VERSION}" \
-    --build-arg "KIND_VERSION=${KIND_VERSION}" \
-    --build-arg "HELM_VERSION=${HELM_VERSION}" \
-    --build-arg "KUBECONFORM_VERSION=${KUBECONFORM_VERSION}" \
-    --format=docker \
+    --build-arg "GO_VERSION=${GO_VERSION}" \
+    --format docker \
     .
 done
 

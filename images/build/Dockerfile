@@ -2,12 +2,17 @@ ARG GO_VERSION
 
 FROM --platform=${BUILDPLATFORM} docker.io/library/golang:${GO_VERSION} as download
 
-# this needs to be separate from the GO_VERSION arg above because otherwise
-# it is not in scope for usage in the RUN instructions below.
-ARG K8S_VERSION
-ARG KIND_VERSION
-ARG HELM_VERSION
-ARG KUBECONFORM_VERSION
+    # the Kubernetes version that is used to determine which kubectl to install.
+ENV KUBECTL_VERSION=1.30.0 \
+    # the kind version installed into this image.
+    # https://github.com/kubernetes-sigs/kind/releases
+    KIND_VERSION=0.26.0 \
+    # the Helm version installed into this image.
+    # https://github.com/helm/helm/releases
+    HELM_VERSION=3.16.3 \
+    # the kubeconform version installed into this image.
+    # https://github.com/yannh/kubeconform/releases
+    KUBECONFORM_VERSION=0.6.7
 
 WORKDIR /tmp
 
@@ -15,7 +20,7 @@ RUN curl --fail -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-$(dpkg --prin
     chmod +x helm && \
     ./helm version --short
 
-RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${K8S_VERSION}/bin/linux/$(dpkg --print-architecture)/kubectl && \
+RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/$(dpkg --print-architecture)/kubectl && \
     chmod +x kubectl && \
     ./kubectl version --client
 
