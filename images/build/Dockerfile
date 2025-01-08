@@ -47,6 +47,7 @@ RUN apt-get update && \
         git \
         curl \
         jq \
+        buildah \
     && rm -rf /var/lib/apt/lists/*
 
 # install Docker (and socat for tunneling the docker registry later)
@@ -58,4 +59,3 @@ RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID"
     mkdir -p /etc/docker && \
     echo '{"data-root":"/docker-graph"}' | jq '.' > /etc/docker/daemon.json && \
     rm -rf /var/lib/apt/lists/*
-

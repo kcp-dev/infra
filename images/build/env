@@ -1,6 +1,6 @@
 # the tag used for the final image. Update the suffix when you want
 # a new version of the image to be built.
-BUILD_IMAGE_TAG=1.23.4-1
+BUILD_IMAGE_TAG=1.23.4-2
 # the Go version used for the images.
 GO_IMAGE_VERSION=1.23.4
 # the Kubernetes version that is used to determine which kubectl
