@@ -1,0 +1,24 @@
+postsubmits:
+  kcp-dev/api-syncagent:
+    - name: post-api-syncagent-publish-image
+      decorate: true
+      clone_uri: "https://github.com/kcp-dev/api-syncagent"
+      cluster: prow # GHCR credentials are only available here
+      labels:
+        preset-ghcr-credentials: "true"
+      branches:
+        - ^main$
+        - ^release-.*
+        - ^v\d+\..*
+      spec:
+        containers:
+          - image: quay.io/containers/buildah:v1.30.0
+            command:
+              - hack/ci/build-image.sh
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                cpu: 2
+                memory: 3Gi
