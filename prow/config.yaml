@@ -13,6 +13,7 @@ plank:
 
   report_templates:
     "*": "[Full PR test history](https://prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/api-syncagent": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/apiextensions-apiserver": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/apimachinery": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/awesome-kcp": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
@@ -33,6 +34,7 @@ plank:
 
   job_url_prefix_config:
     "*": https://prow.kcp.k8c.io/view/
+    "kcp-dev/api-syncagent": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/apiextensions-apiserver": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/apimachinery": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/awesome-kcp": "https://public-prow.kcp.k8c.io/view/"
@@ -70,6 +72,11 @@ plank:
         ssh_host_fingerprints:
           - github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
 
+    - repo: "kcp-dev/api-syncagent"
+      config:
+        s3_credentials_secret: "s3-credentials-public"
+        gcs_configuration:
+          bucket: "s3://prow-public-data"
     - repo: "kcp-dev/apiextensions-apiserver"
       config:
         s3_credentials_secret: "s3-credentials-public"
@@ -266,6 +273,7 @@ tide:
 
     # with release notes
     - repos:
+        - kcp-dev/api-syncagent
         - kcp-dev/kcp
         - kcp-dev/kcp-operator
         - kcp-dev/logicalcluster
