@@ -15,4 +15,4 @@ This directory contains files to build `ghcr.io/kcp-dev/infra/build`, the base i
 
 ## Updates
 
-Main component versions (Go, kind, etc) can be updated in [env](./env). Make sure to bump `BUILD_IMAGE_TAG` accordingly (the usual pattern is Go version plus a suffix that is incremented upon other version updates or addition of some tools).
+Main component versions (Go, kind, etc) can be updated in [env](./env) or the [Dockerfile](./Dockerfile) directly (from the `ENV` section). Make sure to bump `BUILD_IMAGE_TAG` accordingly (the usual pattern is Go version plus a suffix that is incremented upon other version updates or addition of some tools).
