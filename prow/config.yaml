@@ -189,18 +189,18 @@ deck:
     "*":
       allow_anyone: true
   spyglass:
-    # # Configuring these will make an "Artifacts" link appear on the Spyglass page, linking
-    # # to gcsweb.
-    # gcs_browser_prefixes:
-    #   '*': https://gcsweb.kcp.k8c.io/gcs/
-    #   'kcp-dev/infra': https://public-gcsweb.kcp.k8c.io/gcs/
-    # # required so that public periodics can point to the correct gcsweb
-    # # otherwise, gcsweb-public will just redirect to Google Cloud Console
-    # # instead of showing artifacts
-    # gcs_browser_prefixes_by_bucket:
-    #   '*': https://gcsweb.kcp.k8c.io/gcs/
-    #   'prow-data': https://gcsweb.kcp.k8c.io/gcs/
-    #   'prow-public-data': https://public-gcsweb.kcp.k8c.io/gcs/
+    # Configuring these will make an "Artifacts" link appear on the Spyglass page, linking
+    # to gcsweb.
+    gcs_browser_prefixes:
+      '*': https://gcsweb.kcp.k8c.io/gcs/
+      'kcp-dev/infra': https://public-gcsweb.kcp.k8c.io/gcs/
+    # required so that public periodics can point to the correct gcsweb
+    # otherwise, gcsweb-public will just redirect to Google Cloud Console
+    # instead of showing artifacts
+    gcs_browser_prefixes_by_bucket:
+      '*': https://gcsweb.kcp.k8c.io/gcs/
+      'prow-data': https://gcsweb.kcp.k8c.io/gcs/
+      'prow-public-data': https://public-gcsweb.kcp.k8c.io/gcs/
     lenses:
       - required_files:
           - started.json
