@@ -192,15 +192,32 @@ deck:
     # Configuring these will make an "Artifacts" link appear on the Spyglass page, linking
     # to gcsweb.
     gcs_browser_prefixes:
-      '*': https://gcsweb.kcp.k8c.io/gcs/
-      'kcp-dev/infra': https://public-gcsweb.kcp.k8c.io/gcs/
+      '*': https://gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/infra': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/api-syncagent': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/apiextensions-apiserver': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/apimachinery': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/awesome-kcp': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/client-go': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/code-generator': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/controller-runtime': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/controller-runtime-example': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/enhancements': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/friends': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/helm-charts': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/kcp': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/kcp-dev.github.io': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/kcp-operator': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/kcp.io': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/logicalcluster': https://public-gcsweb.kcp.k8c.io/s3/
+      'kubestellar/kubestellar': https://public-gcsweb.kcp.k8c.io/s3/
     # required so that public periodics can point to the correct gcsweb
     # otherwise, gcsweb-public will just redirect to Google Cloud Console
     # instead of showing artifacts
     gcs_browser_prefixes_by_bucket:
-      '*': https://gcsweb.kcp.k8c.io/gcs/
-      'prow-data': https://gcsweb.kcp.k8c.io/gcs/
-      'prow-public-data': https://public-gcsweb.kcp.k8c.io/gcs/
+      '*': https://gcsweb.kcp.k8c.io/s3/
+      'prow-data': https://gcsweb.kcp.k8c.io/s3/
+      'prow-public-data': https://public-gcsweb.kcp.k8c.io/s3/
     lenses:
       - required_files:
           - started.json
