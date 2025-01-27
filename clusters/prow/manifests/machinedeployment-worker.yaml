@@ -64,4 +64,4 @@ spec:
           sshPublicKeys:
             - __SSH_PUBKEY__
       versions:
-        kubelet: 1.26.4
+        kubelet: 1.29.4
