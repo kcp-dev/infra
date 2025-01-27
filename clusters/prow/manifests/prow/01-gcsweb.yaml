@@ -27,10 +27,10 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: gcsweb
-          image: gcr.io/k8s-prow/gcsweb:v20230919-a4926a4d02
+          image: gcr.io/k8s-prow/gcsweb:v20240731-a5d9345e59
           args:
-            - -gcs-credentials-file=/etc/s3-credentials/service-account.json
-            - -b=prow-data
+            - -s3-credentials-file=/etc/s3-credentials/service-account.json
+            - -b=s3://prow-data
           ports:
             - name: http
               containerPort: 8080
