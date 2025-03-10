@@ -105,6 +105,10 @@ plugins:
     plugins:
       - release-note
 
+  kcp-dev/multicluster-provider:
+    plugins:
+      - release-note
+
   kcp-dev/generic-controlplane:
     plugins:
       - release-note
