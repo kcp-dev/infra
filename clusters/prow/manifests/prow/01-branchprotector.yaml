@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: branchprotector
+  namespace: "__PROW_NAMESPACE__"
+spec:
+  schedule: "54 */6 * * *"  # Every 6 hours at 54 minutes past the hour
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app: branchprotector
+    spec:
+      template:
+        spec:
+          containers:
+            - name: branchprotector
+              image: us-docker.pkg.dev/k8s-infra-prow/images/branchprotector:v20250219-e8fa16f56
+              args:
+                - -config-path=/etc/config/config.yaml
+                - -job-config-path=/etc/job-config
+                - -github-token-path=/etc/github/token
+                - -confirm
+                - -github-endpoint=http://ghproxy
+                - -github-endpoint=https://api.github.com
+              volumeMounts:
+                - name: github
+                  mountPath: /etc/github
+                  readOnly: true
+                - name: config
+                  mountPath: /etc/config
+                  readOnly: true
+                - name: job-config
+                  mountPath: /etc/job-config
+                  readOnly: true
+          restartPolicy: Never
+          volumes:
+            - name: github
+              secret:
+                secretName: github-token
+            - name: config
+              configMap:
+                name: config
+            - name: job-config
+              configMap:
+                name: job-config
