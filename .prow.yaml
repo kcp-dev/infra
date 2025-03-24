@@ -7,7 +7,7 @@ presubmits:
       preset-goproxy: "true"
     spec:
       containers:
-        - image: quay.io/containers/buildah:v1.39.0
+        - image: quay.io/containers/buildah:v1.39.2
           command:
             - images/build/hack/build-image.sh
             - go-1.23
@@ -30,7 +30,7 @@ presubmits:
       preset-goproxy: "true"
     spec:
       containers:
-        - image: quay.io/containers/buildah:v1.39.0
+        - image: quay.io/containers/buildah:v1.39.2
           command:
             - images/build/hack/build-image.sh
             - go-1.24
