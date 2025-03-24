@@ -42,7 +42,7 @@ postsubmits:
               - name: KUBE_CONTEXT
                 value: default
 
-    - name: post-infra-publish-images-build
+    - name: post-infra-publish-images-1.23-build
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
       cluster: prow # GHCR credentials are only available here
@@ -50,14 +50,36 @@ postsubmits:
         preset-ghcr-credentials: "true"
       branches:
         - ^main$
-      # this forces to bump the image tag in this file to get a
-      # new image build
-      run_if_changed: '^images/build/env$'
+      run_if_changed: '^images/build/go-1.23'
       spec:
         containers:
-          - image: quay.io/containers/buildah:v1.30.0
+          - image: quay.io/containers/buildah:v1.39.0
             command:
               - images/build/hack/build-image.sh
+              - go-1.23
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                cpu: 2
+                memory: 3Gi
+
+    - name: post-infra-publish-images-1.24-build
+      decorate: true
+      clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
+      cluster: prow # GHCR credentials are only available here
+      labels:
+        preset-ghcr-credentials: "true"
+      branches:
+        - ^main$
+      run_if_changed: '^images/build/go-1.24'
+      spec:
+        containers:
+          - image: quay.io/containers/buildah:v1.39.0
+            command:
+              - images/build/hack/build-image.sh
+              - go-1.24
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
