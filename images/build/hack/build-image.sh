@@ -34,7 +34,8 @@ fi
 repository=ghcr.io/kcp-dev/infra/build
 architectures="amd64 arm64"
 
-cd images/build
+# cd into the desired go-* Docker image
+cd "$(dirname "$0")/../$1"
 
 # read configuration file for build image
 source ./env
