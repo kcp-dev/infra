@@ -329,6 +329,7 @@ branch-protection:
           - kcp-dev/kcp-admins
       include:
         - "^main$"
+        - "^release-.+$"
 
     kubestellar:
       protect: true
