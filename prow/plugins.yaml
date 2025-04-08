@@ -92,14 +92,17 @@ plugins:
   kcp-dev/kcp:
     plugins:
       - release-note
+      - require-matching-label
 
   kcp-dev/api-syncagent:
     plugins:
       - release-note
+      - require-matching-label
 
   kcp-dev/kcp-operator:
     plugins:
       - release-note
+      - require-matching-label
 
   kcp-dev/logicalcluster:
     plugins:
@@ -108,6 +111,7 @@ plugins:
   kcp-dev/multicluster-provider:
     plugins:
       - release-note
+      - require-matching-label
 
   kcp-dev/generic-controlplane:
     plugins:
@@ -136,6 +140,33 @@ plugins:
       - trigger
       - verify-owners # verifies format of OWNERS file
       - wip
+
+require_matching_label:
+  - missing_label: do-not-merge/needs-kind
+    org: kcp-dev
+    repo: kcp
+    prs: true
+    regexp: ^kind/
+  - missing_label: do-not-merge/needs-kind
+    org: kcp-dev
+    repo: api-syncagent
+    prs: true
+    regexp: ^kind/
+  - missing_label: do-not-merge/needs-kind
+    org: kcp-dev
+    repo: kcp-operator
+    prs: true
+    regexp: ^kind/
+  - missing_label: do-not-merge/needs-kind
+    org: kcp-dev
+    repo: kcp-operator
+    prs: true
+    regexp: ^kind/
+  - missing_label: do-not-merge/needs-kind
+    org: kcp-dev
+    repo: multicluster-provider
+    prs: true
+    regexp: ^kind/
 
 external_plugins:
   kcp-dev:
