@@ -20,6 +20,7 @@ periodics:
         - --config=/home/prow/go/src/github.com/kcp-dev/infra/prow/labels.yaml
         - --confirm=true
         - --orgs=kcp-dev
+        - --only=kcp-dev/kcp,kcp-dev/api-syncagent,kcp-dev/kcp-operator,kcp-dev/multicluster-provider,kcp-dev/infra,kcp-dev/helm-charts,kcp-dev/kcp.io,kcp-dev/generic-controlplane,kcp-dev/client-go,kcp-dev/code-generator,kcp-dev/apimachinery,kcp-dev/controller-runtime,kcp-dev/logicalcluster
         - --token=/etc/oauth-token/token
         - --endpoint=http://ghproxy.prow.svc.cluster.local
         - --endpoint=https://api.github.com
