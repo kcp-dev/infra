@@ -52,8 +52,27 @@ resource "oci_core_security_list" "node_api_access" {
       max = 12250
     }
   }
-
 }
+
+resource "oci_core_security_list" "control_plane_node_access" {
+  compartment_id = var.oci_compartment_ocid
+  vcn_id         = oci_core_vcn.prow.id
+  display_name   = "Control Plane Worker Access"
+
+  # Allow VPC CIDR to access kubelet API.
+  ingress_security_rules {
+    protocol = "6" # TCP
+
+    source      = "10.0.0.0/16"
+    source_type = "CIDR_BLOCK"
+
+    tcp_options {
+      min = 10250
+      max = 10250
+    }
+  }
+}
+
 
 resource "oci_core_subnet" "prow_worker_nodes" {
   availability_domain = null
@@ -61,7 +80,7 @@ resource "oci_core_subnet" "prow_worker_nodes" {
   compartment_id      = var.oci_compartment_ocid
   vcn_id              = oci_core_vcn.prow.id
 
-  security_list_ids = [oci_core_vcn.prow.default_security_list_id]
+  security_list_ids = [oci_core_vcn.prow.default_security_list_id, oci_core_security_list.control_plane_node_access.id]
   route_table_id    = oci_core_route_table.prow_worker.id
   display_name      = "Prow Nodes/Pods Subnet"
 }
