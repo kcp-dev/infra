@@ -1,6 +1,6 @@
 ARG GO_VERSION
 
-FROM --platform=${BUILDPLATFORM} docker.io/library/golang:${GO_VERSION} as download
+FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION} as download
 
     # the Kubernetes version that is used to determine which kubectl to install.
 ENV KUBECTL_VERSION=1.32.3 \
@@ -32,7 +32,7 @@ RUN curl --fail -L https://github.com/yannh/kubeconform/releases/download/v${KUB
     chmod +x kubeconform && \
     ./kubeconform -v
 
-FROM docker.io/library/golang:${GO_VERSION}
+FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION}
 
 # this is used by docker as data root
 VOLUME /docker-graph

@@ -11,7 +11,7 @@ presubmits:
       cluster: oci-prow-worker
       spec:
         containers:
-          - image: ghcr.io/kcp-dev/infra/build:1.23.7-1
+          - image: ghcr.io/kcp-dev/infra/build:1.23.7-2
             command:
               - ./hack/run-with-prow.sh
               - ./hack/run-with-prometheus.sh
