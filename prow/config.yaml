@@ -296,7 +296,7 @@ tide:
         - do-not-merge/work-in-progress
         - needs-rebase
 
-    # with release notes
+    # with release-note and needs-kind plugins
     - repos:
         - kcp-dev/api-syncagent
         - kcp-dev/kcp
@@ -314,6 +314,7 @@ tide:
         - do-not-merge/invalid-owners-file
         - do-not-merge/release-note-label-needed
         - do-not-merge/work-in-progress
+        - do-not-merge/needs-kind
         - needs-rebase
 
 branch-protection:
