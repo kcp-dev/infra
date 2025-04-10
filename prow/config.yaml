@@ -353,6 +353,7 @@ presets:
           configMapKeyRef:
             name: cluster-config
             key: DOCKER_REGISTRY_MIRROR_ADDR
+            optional: true
     volumeMounts:
       - name: scratch
         mountPath: /scratch
