@@ -319,17 +319,136 @@ tide:
 branch-protection:
   orgs:
     kcp-dev:
-      protect: true
-      required_status_checks:
-        contexts:
-          - dco
-      restrictions:
-        users: []
-        teams:
-          - kcp-dev/kcp-admins
-      include:
-        - "^main$"
-        - "^release-.+$"
+      repos:
+        kcp:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
+        kcp-operator:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
+        api-syncagent:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
+        helm-charts:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+        infra:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+        multicluster-provider:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
+        kcp.io:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+        client-go:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
+        code-generator:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
+        api-machinery:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
+        logialcluster:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
 
     kubestellar:
       protect: true
