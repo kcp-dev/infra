@@ -438,7 +438,7 @@ branch-protection:
           include:
             - "^main$"
             - "^release-.+$"
-        logialcluster:
+        logicalcluster:
           protect: true
           required_status_checks:
             contexts:
@@ -450,18 +450,6 @@ branch-protection:
           include:
             - "^main$"
             - "^release-.+$"
-
-    kubestellar:
-      protect: true
-      required_status_checks:
-        contexts:
-          - dco
-      restrictions:
-        users: []
-        teams:
-          - kubestellar/kubestellar-admins
-      include:
-        - "^main$"
 
 presets:
   ################################################################
