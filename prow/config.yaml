@@ -426,7 +426,7 @@ branch-protection:
           include:
             - "^main$"
             - "^release-.+$"
-        api-machinery:
+        apimachinery:
           protect: true
           required_status_checks:
             contexts:
