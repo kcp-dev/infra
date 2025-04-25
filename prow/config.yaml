@@ -414,6 +414,7 @@ branch-protection:
           include:
             - "^main$"
             - "^release-.+$"
+            - "^kcp-.+$"
         code-generator:
           protect: true
           required_status_checks:
@@ -426,6 +427,7 @@ branch-protection:
           include:
             - "^main$"
             - "^release-.+$"
+            - "^kcp-.+$"
         apimachinery:
           protect: true
           required_status_checks:
@@ -438,6 +440,18 @@ branch-protection:
           include:
             - "^main$"
             - "^release-.+$"
+            - "^kcp-.+$"
+        kubernetes:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^kcp-.+$"
         logicalcluster:
           protect: true
           required_status_checks:
