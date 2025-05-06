@@ -431,17 +431,18 @@ branch-protection:
             - "^main$"
             - "^release-.+$"
             - "^kcp-.+$"
-        kubernetes:
-          protect: true
-          required_status_checks:
-            contexts:
-              - dco
-          restrictions:
-            users: []
-            teams:
-              - kcp-dev/kcp-admins
-          include:
-            - "^kcp-.+$"
+        # TODO: get kcp-ci-bot permissions to manage kcp-dev/kubernetes branches
+        # kubernetes:
+        #   protect: true
+        #   required_status_checks:
+        #     contexts:
+        #       - dco
+        #   restrictions:
+        #     users: []
+        #     teams:
+        #       - kcp-dev/kcp-admins
+        #   include:
+        #     - "^kcp-.+$"
         logicalcluster:
           protect: true
           required_status_checks:
