@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/logicalcluster:
     - name: pull-logicalcluster-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/logicalcluster.git"

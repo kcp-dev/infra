@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/apimachinery:
     - name: pull-apimachinery-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/apimachinery.git"

@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/controller-runtime:
     - name: pull-controller-runtime-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/controller-runtime.git"

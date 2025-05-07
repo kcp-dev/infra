@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/api-syncagent:
     - name: pull-api-syncagent-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/api-syncagent.git"

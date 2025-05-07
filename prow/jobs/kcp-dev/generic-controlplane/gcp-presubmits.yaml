@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/generic-controlplane:
     - name: pull-gcp-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/generic-controlplane.git"

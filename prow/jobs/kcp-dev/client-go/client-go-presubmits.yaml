@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/client-go:
     - name: pull-client-go-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/client-go.git"

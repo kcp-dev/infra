@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/infra:
     - name: pull-infra-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
@@ -16,6 +17,7 @@ presubmits:
               - -prow-yaml-repo-name=$(REPO_OWNER)/$(REPO_NAME)
 
     - name: pull-infra-validate-prow-jobs
+      cluster: prow
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
       run_if_changed: "prow/jobs/"

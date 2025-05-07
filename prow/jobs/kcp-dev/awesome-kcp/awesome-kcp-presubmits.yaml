@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/awesome-kcp:
     - name: pull-awesome-kcp-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/awesome-kcp.git"

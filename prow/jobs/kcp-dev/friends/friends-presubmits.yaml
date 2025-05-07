@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/friends:
     - name: pull-friends-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/friends.git"

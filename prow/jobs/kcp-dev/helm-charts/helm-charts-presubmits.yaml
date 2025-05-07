@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/helm-charts:
     - name: pull-helm-charts-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/helm-charts.git"

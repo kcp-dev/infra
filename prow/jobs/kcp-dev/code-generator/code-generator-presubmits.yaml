@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/code-generator:
     - name: pull-code-generator-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/code-generator.git"
