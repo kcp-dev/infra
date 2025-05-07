@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/kcp.io:
     - name: pull-kcp-io-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/kcp.io.git"

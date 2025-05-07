@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/apiextensions-apiserver:
     - name: pull-apiextensions-apiserver-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/apiextensions-apiserver.git"

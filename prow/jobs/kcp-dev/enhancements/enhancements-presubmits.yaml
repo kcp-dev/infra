@@ -1,6 +1,7 @@
 presubmits:
   kcp-dev/enhancements:
     - name: pull-enhancements-validate-prow-yaml
+      cluster: prow
       always_run: true
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/enhancements.git"
