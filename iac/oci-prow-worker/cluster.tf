@@ -2,6 +2,8 @@ resource "oci_containerengine_cluster" "prow" {
   name               = "oci-prow-worker"
   kubernetes_version = var.kubernetes_version
 
+  type = "ENHANCED_CLUSTER"
+
   cluster_pod_network_options {
     cni_type = "OCI_VCN_IP_NATIVE"
   }
@@ -31,10 +33,10 @@ resource "oci_containerengine_node_pool" "prow_worker" {
   name               = "prow-worker"
   ssh_public_key     = var.node_pool_ssh_public_key
 
-  # this matches t3.2xlarge sizings.
+  # this matches t3.xlarge sizings.
   node_shape = "VM.Standard.A1.Flex"
   node_shape_config {
-    memory_in_gbs = 32
+    memory_in_gbs = 16
     ocpus         = 8
   }
 
@@ -43,8 +45,9 @@ resource "oci_containerengine_node_pool" "prow_worker" {
   # Find image OCID for your region from https://docs.oracle.com/iaas/images/
   # For now aarch64 latest k/k 1.31 image is used.
   node_source_details {
-    image_id    = "ocid1.image.oc1.us-sanjose-1.aaaaaaaadsern2rllfhao7uyg3t5gafy7xh63apdywrcs3hpryrgnpbgh7sa"
-    source_type = "image"
+    image_id                = "ocid1.image.oc1.us-sanjose-1.aaaaaaaadsern2rllfhao7uyg3t5gafy7xh63apdywrcs3hpryrgnpbgh7sa"
+    source_type             = "image"
+    boot_volume_size_in_gbs = 200
   }
 
   node_config_details {
