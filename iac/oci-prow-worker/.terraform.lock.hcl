@@ -6,6 +6,7 @@ provider "registry.opentofu.org/oracle/oci" {
   constraints = "6.33.0"
   hashes = [
     "h1:Iuo9RepfXpjr0gM/HKv9TzXcd0joq0pyFc7UrvqtuCk=",
+    "h1:JhJfXRCL0BN1YZcw+ejqvHmWGvx4p6CymfOBO+8X9xY=",
     "zh:014dd2366fe7bac2a99581438a19fee611475c44d9aaf15e3325d6b49e4a1461",
     "zh:1282483324fe982d6c1d6d460b5aaa90bc11466d88018b2003bc3c5fcb66b99d",
     "zh:1effcaec5f8ae351a9e783c1ce8cb183bd6fe5435850fdf2aa157ab4cbf2d259",

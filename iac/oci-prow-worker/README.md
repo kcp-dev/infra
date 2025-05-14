@@ -39,3 +39,15 @@ Install `oci` cli and run `oci session authenticate` to get the `oci_config_file
 Set up environment variables by running `source .env`.
 
 Then run `make init` and `make plan` to see the changes that will be applied. If everything looks good, run `make apply`.
+
+## Manual Modifications
+
+### Manual Route Table
+
+The route table `ocid1.routetable.oc1.us-sanjose-1.aaaaaaaaguv25vmwy4j5k2hunwcmjx6tpbbfnmuhzmxowstl76mj4ui7zpxq` was created manually to troubleshoot connectivity issues. It looks like the provider does not allow resource import.
+
+### Node Disk Grow
+
+Reference: https://www.ateam-oracle.com/post/oke-node-sizing-for-very-large-container-images
+
+I (@embik) couldn't find a way to automate this step, so I had to manually adjust the node pool via the UI.
