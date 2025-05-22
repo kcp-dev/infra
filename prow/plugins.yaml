@@ -145,6 +145,10 @@ require_matching_label:
     prs: true
     regexp: ^kind/
 
+milestone_applier:
+  kcp-dev/kcp:
+    main: "v0.28.0"
+
 external_plugins:
   kcp-dev:
     - name: needs-rebase
