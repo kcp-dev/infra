@@ -3,7 +3,7 @@ ARG GO_VERSION
 FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION} as download
 
     # the Kubernetes version that is used to determine which kubectl to install.
-ENV KUBECTL_VERSION=1.32.3 \
+ENV KUBECTL_VERSION=1.32.5 \
     # the kind version installed into this image.
     # https://github.com/kubernetes-sigs/kind/releases
     KIND_VERSION=0.27.0 \
@@ -12,25 +12,24 @@ ENV KUBECTL_VERSION=1.32.3 \
     HELM_VERSION=3.17.2 \
     # the kubeconform version installed into this image.
     # https://github.com/yannh/kubeconform/releases
-    KUBECONFORM_VERSION=0.6.7
+    KUBECONFORM_VERSION=0.7.0
 
 WORKDIR /tmp
 
+# Do not _run_ these tools during build because when emulating with qemu,
+# running them will fail: https://github.com/golang/go/issues/69255
+
 RUN curl --fail -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-$(dpkg --print-architecture).tar.gz | tar -xzO linux-$(dpkg --print-architecture)/helm > helm && \
-    chmod +x helm && \
-    ./helm version --short
+    chmod +x helm
 
 RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/$(dpkg --print-architecture)/kubectl && \
-    chmod +x kubectl && \
-    ./kubectl version --client
+    chmod +x kubectl
 
 RUN curl --fail -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-$(dpkg --print-architecture) && \
-    chmod +x kind && \
-    ./kind version
+    chmod +x kind
 
 RUN curl --fail -L https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-$(dpkg --print-architecture).tar.gz | tar -xzO kubeconform > kubeconform && \
-    chmod +x kubeconform && \
-    ./kubeconform -v
+    chmod +x kubeconform
 
 FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION}
 
