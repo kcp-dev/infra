@@ -3,7 +3,7 @@ ARG GO_VERSION
 FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION} as download
 
     # the Kubernetes version that is used to determine which kubectl to install.
-ENV KUBECTL_VERSION=1.30.0 \
+ENV KUBECTL_VERSION=1.30.13 \
     # the kind version installed into this image.
     # https://github.com/kubernetes-sigs/kind/releases
     KIND_VERSION=0.26.0 \
