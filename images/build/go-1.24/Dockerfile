@@ -3,7 +3,7 @@ ARG GO_VERSION
 FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION} as download
 
     # the Kubernetes version that is used to determine which kubectl to install.
-ENV KUBECTL_VERSION=1.32.3 \
+ENV KUBECTL_VERSION=1.32.5 \
     # the kind version installed into this image.
     # https://github.com/kubernetes-sigs/kind/releases
     KIND_VERSION=0.27.0 \
@@ -12,7 +12,7 @@ ENV KUBECTL_VERSION=1.32.3 \
     HELM_VERSION=3.17.2 \
     # the kubeconform version installed into this image.
     # https://github.com/yannh/kubeconform/releases
-    KUBECONFORM_VERSION=0.6.7
+    KUBECONFORM_VERSION=0.7.0
 
 WORKDIR /tmp
 
