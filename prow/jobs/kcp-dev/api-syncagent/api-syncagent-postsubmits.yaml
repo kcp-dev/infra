@@ -12,7 +12,7 @@ postsubmits:
         - ^v\d+\..*
       spec:
         containers:
-          - image: quay.io/containers/buildah:v1.30.0
+          - image: quay.io/containers/buildah:v1.38.0
             command:
               - hack/ci/build-image.sh
             # docker-in-docker needs privileged mode
