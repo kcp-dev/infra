@@ -32,6 +32,9 @@ kubectl apply --filename manifests/cluster-autoscaler.yaml
 echo "Installing qemu..."
 kubectl apply --filename manifests/multiarch-deps-installer.yaml
 
+echo "Enabling cgroups v2..."
+kubectl apply --filename manifests/cgroups-v2-enabler.yaml
+
 ###########################################################
 # ensure these deployments are scheduled on the stable nodes, so
 # that when zero workers are running, these essential services still
