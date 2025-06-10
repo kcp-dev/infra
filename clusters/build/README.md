@@ -1,18 +1,18 @@
 # Build Cluster
 
 This directory contains the manifests for managing the build cluster. This
-is the cluster where most of the Prow jobs are executed.
+is the cluster where most of the kcp Prow jobs are executed.
+
+The cluster has been deployed from the IaC files in [opentofu](./opentofu/) but some manual modifications were necessary.
+Check the linked README for details.
 
 ## Nodes
 
-There are 2 MachineDeployments in this cluster:
+This cluster has been configured with the [cluster-autoscaler addon](./opentofu/addons.tf) to scale up to 5 nodes.
 
-* `workers` are the regular worker machines. This MachineDeployment is
-  automatically scaled by the cluster-autoscaler to match demand.
-* `stable` are a set of stable nodes that run cluster-wide services
-  like the Go-Proxy, the registry mirror etc. -- things that should not
-  randomly go away when worker nodes are decommissioned.
+Each node is configured with 16GB RAM / 8 vCPUs (ARM-based).
 
+<!--
 ## Docker Registry Mirror
 
 The cluster is configured to provision each node with a container registry
@@ -24,6 +24,7 @@ In case a job runs docker-in-docker or similar setups, the inner container
 engine can be pointed to `$DOCKER_REGISTRY_MIRROR_ADDR` (has a value like
 `http://registry-mirror.registry.svc.cluster.local:5001`) to make it use
 the proper mirror.
+-->
 
 ## Goproxy
 

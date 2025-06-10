@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-config
+  namespace: '__PROW_TESTPOD_NAMESPACE__'
+data:
+  GOPROXY: http://athens-proxy.athens.svc.cluster.local
