@@ -21,4 +21,10 @@ retry 3 kubectl apply --filename manifests/athens.yaml
 # by Prow presets
 retry 3 kubectl apply --filename manifests/cluster-config.yaml
 
+###########################################################
+# install additional software
+
+echo "Enabling cgroups v2..."
+kubectl apply --filename manifests/cgroups-v2-enabler.yaml
+
 echo "Done :-)"
