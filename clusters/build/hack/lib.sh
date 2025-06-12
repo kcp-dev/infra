@@ -19,6 +19,27 @@ retry() {
   return $rc
 }
 
+actual_retry() {
+  retries=$1
+  shift
+
+  count=0
+  delay=1
+  until "$@"; do
+    rc=$?
+    count=$((count + 1))
+    if [ $count -lt "$retries" ]; then
+      echo "Retry $count/$retries exited $rc, retrying in $delay seconds..." > /dev/stderr
+      sleep $delay
+    else
+      echo "Retry $count/$retries exited $rc, no more retries left." > /dev/stderr
+      return $rc
+    fi
+    delay=$((delay * 2))
+  done
+  return 0
+}
+
 write_junit() {
   # Doesn't make any sense if we don't know a testname
   if [ -z "${TEST_NAME:-}" ]; then return; fi
