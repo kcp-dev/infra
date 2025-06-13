@@ -1,0 +1,29 @@
+---
+periodics:
+  # Continuously verify that the kcp-operator is compatible with kcp, so that issues
+  # can be addressed early in the operator.
+  - name: periodic-kcp-operator-e2e-canary
+    cron: "42 3 * * *" # once per day at night
+    decorate: true
+    labels:
+      preset-goproxy: "true"
+    extra_refs:
+      - org: kcp-dev
+        repo: kcp-operator
+        base_ref: main
+        clone_uri: "ssh://git@github.com/kcp-dev/kcp-operator.git"
+    spec:
+      containers:
+        - image: ghcr.io/kcp-dev/infra/build:1.24.4-1
+          command:
+            - hack/ci/run-e2e-tests.sh
+          env:
+            - name: KCP_TAG
+              value: main
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: 2
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
