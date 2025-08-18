@@ -58,7 +58,7 @@ RUN apt-get update && \
 RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | gpg --dearmor > /usr/share/keyrings/docker.com.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.com.gpg] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends docker-ce=5:27.3.* socat && \
+    apt-get install -y --no-install-recommends docker-ce=5:28.3.* socat && \
     sed -i 's/cgroupfs_mount$/#cgroupfs_mount\n/' /etc/init.d/docker && \
     sed -i 's/ulimit -Hn/#ulimit -Hn/g' /etc/init.d/docker && \
     mkdir -p /etc/docker && \
