@@ -44,3 +44,26 @@ presubmits:
             requests:
               memory: 1Gi
               cpu: 1
+
+  - name: pull-infra-images-1.25-build
+    decorate: true
+    clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
+    run_if_changed: '^images/build/go-1.25'
+    labels:
+      preset-goproxy: "true"
+    spec:
+      containers:
+        - image: quay.io/containers/buildah:v1.39.2
+          command:
+            - images/build/hack/build-image.sh
+            - go-1.25
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          env:
+            - name: DRY_RUN
+              value: '1'
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 1
