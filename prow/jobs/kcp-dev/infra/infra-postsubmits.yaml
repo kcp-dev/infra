@@ -87,3 +87,26 @@ postsubmits:
               requests:
                 cpu: 2
                 memory: 3Gi
+
+    - name: post-infra-publish-images-1.25-build
+      decorate: true
+      clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
+      cluster: prow # GHCR credentials are only available here
+      labels:
+        preset-ghcr-credentials: "true"
+      branches:
+        - ^main$
+      run_if_changed: '^images/build/go-1.25'
+      spec:
+        containers:
+          - image: quay.io/containers/buildah:v1.39.2
+            command:
+              - images/build/hack/build-image.sh
+              - go-1.25
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                cpu: 2
+                memory: 3Gi
