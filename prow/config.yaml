@@ -31,6 +31,7 @@ plank:
     "kcp-dev/kcp.io": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/logicalcluster": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/multicluster-provider": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/publishing-bot": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
 
   job_url_prefix_config:
     "*": https://prow.kcp.k8c.io/view/
@@ -52,6 +53,7 @@ plank:
     "kcp-dev/kcp.io": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/logicalcluster": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/multicluster-provider": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/publishing-bot": "https://public-prow.kcp.k8c.io/view/"
 
   default_decoration_config_entries:
     # default config
@@ -167,6 +169,11 @@ plank:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
           bucket: "s3://prow-public-data"
+    - repo: "kcp-dev/publishing-bot"
+      config:
+        s3_credentials_secret: "s3-credentials-public"
+        gcs_configuration:
+          bucket: "s3://prow-public-data"
 
 in_repo_config:
   enabled:
@@ -211,6 +218,7 @@ deck:
       'kcp-dev/kcp.io': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/logicalcluster': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/multicluster-provider': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/publishing-bot': https://public-gcsweb.kcp.k8c.io/s3/
     # required so that public periodics can point to the correct gcsweb
     # otherwise, gcsweb-public will just redirect to Google Cloud Console
     # instead of showing artifacts
@@ -275,6 +283,7 @@ tide:
         - kcp-dev/infra
         - kcp-dev/kcp-dev.github.io
         - kcp-dev/kcp.io
+        - kcp-dev/publishing-bot
       labels:
         - lgtm
         - approved
@@ -454,6 +463,18 @@ branch-protection:
               - kcp-dev/kcp-admins
           include:
             - "^main$"
+            - "^release-.+$"
+        publishing-bot:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^master$"
             - "^release-.+$"
 
 presets:
