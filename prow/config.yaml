@@ -267,6 +267,8 @@ tide:
   merge_method:
     kcp-dev: merge
 
+  blocker_label: tide/merge-blocker
+
   queries:
     # no release notes
     - repos:
