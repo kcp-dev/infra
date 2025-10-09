@@ -1,6 +1,6 @@
 # the tag used for the final image. Update the suffix when you want
 # a new version of the image to be built.
-BUILD_IMAGE_TAG=1.24.8-1
+BUILD_IMAGE_TAG=1.24.8-2
 # the Go version used for the images.
 GO_VERSION=1.24.8
 # the kindest image that matches the kind version above
