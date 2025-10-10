@@ -1,7 +1,13 @@
 # the tag used for the final image. Update the suffix when you want
 # a new version of the image to be built.
-BUILD_IMAGE_TAG=1.25.2-2
+BUILD_IMAGE_TAG=1.25.2-3
 # the Go version used for the images.
 GO_VERSION=1.25.2
 # the kindest image that matches the kind version above
-KINDEST_IMAGE=kindest/node:v1.33.1@sha256:050072256b9a903bd914c0b2866828150cb229cea0efe5892e2b644d5dd3b34f
+# INFO(embik): this is pinned due to extensive debugging in https://github.com/kcp-dev/kcp-operator/pull/104
+# showing that importing images seems to be broken with newer node images (at least 1.32.5, but 1.34.0 [newest
+# image at the time of writing this]). 
+# It's not fully clear what bug this really is, but here is a collection of issues I found related:
+# - https://github.com/kubernetes-sigs/kind/issues/3945
+# - https://github.com/containerd/containerd/issues/11228
+KINDEST_IMAGE=kindest/node:v1.32.2@sha256:f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f
