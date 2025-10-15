@@ -12,6 +12,7 @@ The following environment variables are required before running any `make` targe
 - `AWS_SECRET_ACCESS_KEY`: Needs to be the secret for a [Customer Secret Key](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcredentials.htm#Working2) to access OCI's S3-compatible storage buckets.
 - `AWS_ENDPOINT_URL_S3`: Needs to be `https://<object namespace>.compat.objectstorage.us-sanjose-1.oraclecloud.com`. Replace `<object namespace>` with the namespace displayed on the bucket (see OCI Console for this information).
 
+
 ## Running OpenTofu
 
 Easiest way to run OpenTofu locally is to create a `.env` file with the required environment variables and then run `make` commands. For example, create a file `.env` (or see [.env.example](./.env.example)):
@@ -22,6 +23,8 @@ export AWS_SECRET_ACCESS_KEY=xxxxxxxxxxxxxxxxxxxx
 export AWS_ENDPOINT_URL_S3=https://xxxxxxxxxxxx.compat.objectstorage.us-sanjose-1.oraclecloud.com
 export TF_LOG=DEBUG
 ```
+
+See [winscp](https://winscp.net/eng/docs/guide_oracle) blog post how to get the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
 Create `terraform.tfvars` file with the following content:
 
