@@ -43,9 +43,9 @@ resource "oci_containerengine_node_pool" "prow_worker" {
 
   # Using image Oracle-Linux-8.x-<date>
   # Find image OCID for your region from https://docs.oracle.com/iaas/images/
-  # For now aarch64 latest k/k 1.31 image is used.
+  # For now aarch64 latest k/k 1.34 image is used.
   node_source_details {
-    image_id                = "ocid1.image.oc1.us-sanjose-1.aaaaaaaadsern2rllfhao7uyg3t5gafy7xh63apdywrcs3hpryrgnpbgh7sa"
+    image_id                = "ocid1.image.oc1.us-sanjose-1.aaaaaaaatjh3baja55d6hy2ep6wfixeatenrvebcih3mcwzhwuzdcwa7o7wa"
     source_type             = "image"
     boot_volume_size_in_gbs = 200
   }

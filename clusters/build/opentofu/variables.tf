@@ -27,22 +27,22 @@ variable "node_pool_ssh_public_key" {
 
 variable "node_pool_worker_size" {
   type    = number
-  default = 3
+  default = 4
 }
 
 variable "cluster_autoscaler_min" {
   type    = number
-  default = 1
+  default = 4
 }
 
 variable "cluster_autoscaler_max" {
   type    = number
-  default = 5
+  default = 7
 }
 
 variable "kubernetes_version" {
   type    = string
-  default = "v1.31.1"
+  default = "v1.33.1"
 }
 
 variable "oci_config_file_profile" {
