@@ -9,7 +9,7 @@ ENV KUBECTL_VERSION=1.33.4 \
     KIND_VERSION=0.30.0 \
     # the Helm version installed into this image.
     # https://github.com/helm/helm/releases
-    HELM_VERSION=3.18.5 \
+    HELM_VERSION=3.19.2 \
     # the kubeconform version installed into this image.
     # https://github.com/yannh/kubeconform/releases
     KUBECONFORM_VERSION=0.7.0
