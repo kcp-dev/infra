@@ -7,7 +7,7 @@ presubmits:
       clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
       spec:
         containers:
-          - image: gcr.io/k8s-prow/checkconfig:v20230919-a4926a4d02
+          - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260113-898377d8b
             command:
               - checkconfig
             args:
@@ -25,7 +25,7 @@ presubmits:
         - ^main$
       spec:
         containers:
-          - image: gcr.io/k8s-prow/checkconfig:v20230919-a4926a4d02
+          - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260113-898377d8b
             command:
               - checkconfig
             args:
@@ -43,7 +43,7 @@ presubmits:
       run_if_changed: '^prow/labels.yaml$'
       spec:
         containers:
-        - image: gcr.io/k8s-prow/label_sync:v20230523-2834e18241
+        - image: gcr.io/k8s-staging-test-infra/label_sync:v20251212-3f863f26d7
           command:
           - label_sync
           args:
