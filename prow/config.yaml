@@ -61,10 +61,10 @@ plank:
         timeout: 2h
         grace_period: 5m
         utility_images:
-          clonerefs: "gcr.io/k8s-prow/clonerefs:v20230518-c802d8aea4"
-          initupload: "gcr.io/k8s-prow/initupload:v20230518-c802d8aea4"
-          entrypoint: "gcr.io/k8s-prow/entrypoint:v20230518-c802d8aea4"
-          sidecar: "gcr.io/k8s-prow/sidecar:v20230518-c802d8aea4"
+          clonerefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260113-898377d8b"
+          initupload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260113-898377d8b"
+          entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260113-898377d8b"
+          sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260113-898377d8b"
         gcs_configuration:
           bucket: "s3://prow-data"
           path_strategy: "explicit"
