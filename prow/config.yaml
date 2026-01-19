@@ -25,6 +25,7 @@ plank:
     "kcp-dev/friends": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/helm-charts": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/infra": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/init-agent": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/kcp": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/kcp-dev.github.io": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/kcp-operator": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
@@ -47,6 +48,7 @@ plank:
     "kcp-dev/friends": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/helm-charts": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/infra": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/init-agent": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/kcp": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/kcp-dev.github.io": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/kcp-operator": "https://public-prow.kcp.k8c.io/view/"
@@ -134,6 +136,11 @@ plank:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
           bucket: "s3://prow-public-data"
+    - repo: "kcp-dev/init-agent"
+      config:
+        s3_credentials_secret: "s3-credentials-public"
+        gcs_configuration:
+          bucket: "s3://prow-public-data"
     - repo: "kcp-dev/kcp"
       config:
         s3_credentials_secret: "s3-credentials-public"
@@ -200,7 +207,6 @@ deck:
     # to gcsweb.
     gcs_browser_prefixes:
       '*': https://gcsweb.kcp.k8c.io/s3/
-      'kcp-dev/infra': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/api-syncagent': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/apiextensions-apiserver': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/apimachinery': https://public-gcsweb.kcp.k8c.io/s3/
@@ -212,6 +218,8 @@ deck:
       'kcp-dev/enhancements': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/friends': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/helm-charts': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/infra': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/init-agent': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/kcp': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/kcp-dev.github.io': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/kcp-operator': https://public-gcsweb.kcp.k8c.io/s3/
@@ -300,11 +308,12 @@ tide:
     # with release-note and needs-kind plugins
     - repos:
         - kcp-dev/api-syncagent
+        - kcp-dev/generic-controlplane
+        - kcp-dev/init-agent
         - kcp-dev/kcp
         - kcp-dev/kcp-operator
         - kcp-dev/logicalcluster
         - kcp-dev/multicluster-provider
-        - kcp-dev/generic-controlplane
       labels:
         - lgtm
         - approved
@@ -380,6 +389,18 @@ branch-protection:
               - kcp-dev/kcp-admins
           include:
             - "^main$"
+        init-agent:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+            - "^release-.+$"
         multicluster-provider:
           protect: true
           required_status_checks:

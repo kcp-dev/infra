@@ -118,6 +118,11 @@ plugins:
     plugins:
       - config-updater # updates prow configuration
 
+  kcp-dev/init-agent:
+    plugins:
+      - release-note
+      - require-matching-label
+
 require_matching_label:
   - missing_label: do-not-merge/needs-kind
     org: kcp-dev
