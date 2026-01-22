@@ -1,0 +1,22 @@
+presubmits:
+  kcp-dev/init-agent:
+    - name: pull-init-agent-validate-prow-yaml
+      cluster: prow
+      always_run: true
+      decorate: true
+      clone_uri: "ssh://git@github.com/kcp-dev/init-agent.git"
+      extra_refs:
+        - org: kcp-dev
+          repo: infra
+          base_ref: main
+          clone_uri: git@github.com:kcp-dev/infra.git
+      spec:
+        containers:
+          - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260113-898377d8b
+            command:
+              - checkconfig
+            args:
+              - -plugin-config=/home/prow/go/src/github.com/kcp-dev/infra/prow/plugins.yaml
+              - -config-path=/home/prow/go/src/github.com/kcp-dev/infra/prow/config.yaml
+              - -job-config-path=/home/prow/go/src/github.com/kcp-dev/infra/prow/jobs
+              - -prow-yaml-repo-name=$(REPO_OWNER)/$(REPO_NAME)
