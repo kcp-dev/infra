@@ -1,0 +1,226 @@
+#
+# This sets up a Docker registry pull-through proxy for all nodes
+# in the cluster. For this
+#
+# * a Prow preset can introduce the address of the proxy to each
+#   Prowjob, allowing kind/docker to pull through the proxy (this
+#   is, for our workload, much more important than configuring the node).
+# * a DaemonSet deploys an haproxy that proxies 127.0.0.1:5001 to
+#   the mirror pod
+# * a mirror pod pod has a 200Gi volume and proxies through to the
+#   the upstream Docker registry
+#
+# For more info: https://docs.docker.com/registry/recipes/mirror/
+#
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: registry
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-proxy
+  namespace: registry
+data:
+  haproxy.cfg: |
+    global
+      log stdout local0
+      log fd@1 local0
+      log stdout format raw local0
+
+    defaults
+      mode tcp
+      timeout client      30000ms
+      timeout server      30000ms
+      timeout connect      3000ms
+      retries 3
+
+    frontend registry_mirror_listener
+      bind 127.0.0.1:5001
+      default_backend registry_mirror_backend
+
+    backend registry_mirror_backend
+      server svc registry-mirror.registry.svc.cluster.local.:5001
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: registry-proxy
+  namespace: registry
+spec:
+  selector:
+    matchLabels:
+      app: registry-proxy
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: registry-proxy
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: registry-proxy
+          image: haproxy:3.3-alpine
+          command:
+            - haproxy
+            - -f
+            - /etc/haproxy/haproxy.cfg
+          volumeMounts:
+            - name: config
+              mountPath: /etc/haproxy
+      tolerations:
+        - operator: Exists
+          key: kubermatic.io/stable
+      volumes:
+        - name: config
+          configMap:
+            name: registry-proxy
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: registry-mirror
+  namespace: registry
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-mirror
+  namespace: registry
+data:
+  config.yml: |-
+    version: 0.1
+    log:
+      fields:
+        service: registry
+    storage:
+      cache:
+        blobdescriptor: inmemory
+      filesystem:
+        rootdirectory: /var/lib/registry
+    http:
+      addr: :5001
+      headers:
+        X-Content-Type-Options: [nosniff]
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+    proxy:
+      remoteurl: https://registry-1.docker.io
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry-mirror
+  namespace: registry
+  labels:
+    app: registry-mirror
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry-mirror
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: registry-mirror
+    spec:
+      containers:
+        - name: registry
+          image: registry:3.0.0
+          ports:
+            - containerPort: 5001
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/registry
+            - name: config
+              mountPath: /etc/distribution
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: registry-mirror
+        - name: config
+          configMap:
+            name: registry-mirror
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry-mirror
+  namespace: registry
+  labels:
+    app: registry-mirror
+spec:
+  ports:
+    - port: 5001
+  selector:
+    app: registry-mirror
+
+# The following resources are used by Prowjobs to allow them
+# to delete pods in the registry namespace. This is part of the
+# periodic cleanup procedure.
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: registry-cleaner
+  namespace: default
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: registry-cleaner
+  namespace: registry
+rules:
+  # for scaling a deployment, we need permissions to get it,
+  # otherwise kubectl will return "error: no objects passed to scale"
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get"]
+
+  # scale mirror deployment up & down
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale"]
+    verbs: ["patch"]
+
+  # create, watch & delete the cleanup job
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "list", "watch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: registry-cleaner
+  namespace: registry
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: registry-cleaner
+subjects:
+  - kind: ServiceAccount
+    name: registry-cleaner
+    namespace: default

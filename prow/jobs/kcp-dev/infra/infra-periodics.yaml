@@ -32,3 +32,20 @@ periodics:
       - name: oauth-token
         secret:
           secretName: github-token
+
+  - name: ci-infra-cleanup-ci-mirror-registry
+    cron: "0 2 * * 0"
+    hidden: true
+    decorate: true
+    extra_refs:
+      - org: kcp-dev
+        repo: infra
+        base_ref: main
+        clone_uri: "git@github.com:kcp-dev/infra.git"
+    spec:
+      serviceAccountName: registry-cleaner
+      containers:
+        - name: registry-cleaner
+          image: quay.io/kubermatic/build:go-1.22-node-20-18
+          command:
+            - ./clusters/build/hack/ci/clean-up-registry-mirror.sh

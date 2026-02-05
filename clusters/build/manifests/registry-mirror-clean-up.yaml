@@ -1,0 +1,34 @@
+#
+# This Job gets run when the clean-up-registry-mirror.sh wants to wipe the mirror.
+#
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: clean-up
+  namespace: registry
+  labels:
+    app: clean-up
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: clean-up
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: clean-up
+          image: alpine:3.23
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - rm -rf /var/lib/registry/*
+          volumeMounts:
+            - mountPath: /var/lib/registry
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: registry-mirror
