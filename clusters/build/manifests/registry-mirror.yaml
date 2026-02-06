@@ -74,9 +74,6 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/haproxy
-      tolerations:
-        - operator: Exists
-          key: kubermatic.io/stable
       volumes:
         - name: config
           configMap:
