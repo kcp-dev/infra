@@ -4,4 +4,5 @@ metadata:
   name: cluster-config
   namespace: '__PROW_TESTPOD_NAMESPACE__'
 data:
+  DOCKER_REGISTRY_MIRROR_ADDR: http://registry-mirror.registry.svc.cluster.local:5001
   GOPROXY: http://athens-proxy.athens.svc.cluster.local
