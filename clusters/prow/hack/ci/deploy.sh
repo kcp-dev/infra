@@ -62,6 +62,9 @@ kubectl apply --filename manifests/prow/
 # must be server-side, as the YAML is way too large
 kubectl replace --filename manifests/prowjob-crd.yaml
 
+echo "Installing Tide restarter..."
+kubectl apply --filename manifests/tide-restarter.yaml
+
 ###########################################################
 # ensure these deployments are scheduled on the stable nodes, so
 # that when zero workers are running, these essential services still
