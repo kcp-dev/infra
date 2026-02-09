@@ -1,0 +1,69 @@
+#
+# For unknown reasons, Tide begins to fail to clone git repositories after some
+# time. This has begun sometime in early 2026 out of the blue sky. Instead of
+# spending time debugging the root cause, this CronJob simply restarts Tide
+# once per night.
+#
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tide-restarter
+  namespace: "__PROW_NAMESPACE__"
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tide-restarter
+  namespace: "__PROW_NAMESPACE__"
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tide-restarter
+  namespace: "__PROW_NAMESPACE__"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tide-restarter
+subjects:
+  - kind: ServiceAccount
+    name: tide-restarter
+    namespace: "__PROW_NAMESPACE__"
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restart-tide
+  namespace: "__PROW_NAMESPACE__"
+spec:
+  schedule: "24 2 * * *"  # 2.24 am (scientifically proven to be the optimal time)
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app: restart-tide
+    spec:
+      template:
+        spec:
+          serviceAccountName: tide-restarter
+          restartPolicy: Never
+          containers:
+            - name: restart-tide
+              image: ghcr.io/kcp-dev/infra/build:1.25.6-1
+              command:
+                - kubectl
+              args:
+                - --namespace
+                - prow
+                - delete
+                - pods
+                - --selector
+                - "app=tide"
