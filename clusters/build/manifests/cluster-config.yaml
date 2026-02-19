@@ -5,4 +5,9 @@ metadata:
   namespace: '__PROW_TESTPOD_NAMESPACE__'
 data:
   DOCKER_REGISTRY_MIRROR_ADDR: http://registry-mirror.registry.svc.cluster.local:5001
-  GOPROXY: http://athens-proxy.athens.svc.cluster.local
+
+  # It would be nice if we could avoid ",direct", but there are just too
+  # many occasions where upstream has issues and fixing those is often not
+  # easy. Instead of blocking us from progessing, we'd rather go uncached
+  # for some of our dependencies when needed.
+  GOPROXY: http://athens-proxy.athens.svc.cluster.local,direct
