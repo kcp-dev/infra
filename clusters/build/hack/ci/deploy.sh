@@ -16,6 +16,9 @@ sed_settings 'manifests/*.yaml'
 echodate "Installing Athens..."
 retry 3 kubectl apply --filename manifests/athens.yaml
 
+echodate "Installing Registry Mirror..."
+retry 3 kubectl apply --filename manifests/registry-mirror.yaml
+
 # create CI cluster config; this is a ConfigMap to allow different CI
 # clusters to have different configuration values that are then used
 # by Prow presets
