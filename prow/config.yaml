@@ -276,6 +276,9 @@ tide:
     kcp-dev: merge
 
   blocker_label: tide/merge-blocker
+  squash_label: tide/merge-method-squash
+  rebase_label: tide/merge-method-rebase
+  merge_label: tide/merge-method-merge
 
   queries:
     # no release notes
