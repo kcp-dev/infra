@@ -66,7 +66,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: registry-proxy
-          image: haproxy:3.3-alpine
+          image: ghcr.io/kcp-dev/infra/haproxy:3.3-alpine
           command:
             - haproxy
             - -f
@@ -144,7 +144,7 @@ spec:
     spec:
       containers:
         - name: registry
-          image: registry:3.0.0
+          image: ghcr.io/kcp-dev/infra/registry:3.0
           env:
             - name: OTEL_TRACES_EXPORTER
               value: none
