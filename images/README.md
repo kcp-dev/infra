@@ -13,4 +13,9 @@ To make the CI cluster's registry mirror independent of Docker Hub, we are mirro
 * https://github.com/kcp-dev/infra/pkgs/container/infra%2Fregistry
 * https://github.com/kcp-dev/infra/pkgs/container/infra%2Fhaproxy
 
-There is currently no automation in place to update these mirrors. Someone just pulled them once, manually pushed them to GHCR and that's it.
+There is currently no automation in place to update these mirrors. Someone just pulled them once, manually pushed them to GHCR and that's it. To ensure all images for all architectures are copied correctly, use a tool like [regctl](https://github.com/regclient/regclient/releases/latest):
+
+```bash
+regctl image copy haproxy:3.3-alpine ghcr.io/kcp-dev/infra/haproxy:3.3-alpine
+regctl image copy registry:3         ghcr.io/kcp-dev/infra/registry:3.0
+```
