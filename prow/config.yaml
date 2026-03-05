@@ -274,6 +274,11 @@ tide:
 
   merge_method:
     kcp-dev: merge
+    kcp-dev/api-syncagent: squash
+    kcp-dev/helm-charts: squash
+    kcp-dev/infra: squash
+    kcp-dev/init-agent: squash
+    kcp-dev/kcp-operator: squash
 
   blocker_label: tide/merge-blocker
   squash_label: tide/merge-method-squash
