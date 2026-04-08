@@ -34,7 +34,7 @@ RUN curl --fail -Lo kind https://github.com/kubernetes-sigs/kind/releases/downlo
 RUN curl --fail -L https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-$(dpkg --print-architecture).tar.gz | tar -xzO kubeconform > kubeconform && \
     chmod +x kubeconform
 
-RUN curl --fail -L https://codeberg.org/xrstf/protokol/releases/download/v${PROTOKOL_VERSION}/protokol_${PROTOKOL_VERSION}_linux_$(dpkg --print-architecture).tar.gz | tar -xzO protokol > protokol && \
+RUN curl --fail -L https://codeberg.org/xrstf/protokol/releases/download/v${PROTOKOL_VERSION}/protokol_${PROTOKOL_VERSION}_linux_$(dpkg --print-architecture).tar.gz | tar -xzO protokol_${PROTOKOL_VERSION}_linux_$(dpkg --print-architecture)/protokol > protokol && \
     chmod +x protokol
 
 FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION}
