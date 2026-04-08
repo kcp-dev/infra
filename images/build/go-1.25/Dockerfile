@@ -12,7 +12,10 @@ ENV KUBECTL_VERSION=1.33.8 \
     HELM_VERSION=3.19.5 \
     # the kubeconform version installed into this image.
     # https://github.com/yannh/kubeconform/releases
-    KUBECONFORM_VERSION=0.7.0
+    KUBECONFORM_VERSION=0.7.0 \
+    # the Protokol version installed into this image.
+    # https://codeberg.org/xrstf/protokol/releases
+    PROTOKOL_VERSION=0.7.4
 
 WORKDIR /tmp
 
@@ -31,6 +34,9 @@ RUN curl --fail -Lo kind https://github.com/kubernetes-sigs/kind/releases/downlo
 RUN curl --fail -L https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-$(dpkg --print-architecture).tar.gz | tar -xzO kubeconform > kubeconform && \
     chmod +x kubeconform
 
+RUN curl --fail -L https://codeberg.org/xrstf/protokol/releases/download/v${PROTOKOL_VERSION}/protokol_${PROTOKOL_VERSION}_linux_$(dpkg --print-architecture).tar.gz | tar -xzO protokol > protokol && \
+    chmod +x protokol
+
 FROM --platform=${TARGETPLATFORM} docker.io/library/golang:${GO_VERSION}
 
 # this is used by docker as data root
@@ -40,6 +46,7 @@ COPY --from=download /tmp/kubectl /usr/local/bin/
 COPY --from=download /tmp/kind /usr/local/bin/
 COPY --from=download /tmp/helm /usr/local/bin/
 COPY --from=download /tmp/kubeconform /usr/local/bin/
+COPY --from=download /tmp/protokol /usr/local/bin/
 
 COPY start-docker.sh /usr/local/bin/
 # this pre-loads the kindest/node image so it can be loaded via docker
