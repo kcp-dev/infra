@@ -1,0 +1,118 @@
+repositories:
+  - owner: kcp-dev
+    name: kcp
+    displayName: kcp
+    releaseBranches:
+      pattern: release-\d\.\d+$
+      max: 3
+    pullRequests:
+      maxDisplay: 5
+    fields:
+      - id: go
+        label: Go
+        location: column
+        file:
+          paths:
+            - Dockerfile
+          filterCommand:
+            - /bin/sh
+            - /config/extract-dockerfile-image-tag.sh
+          allowedEnv: [PATH]
+
+      - id: clientgo
+        label: Kube
+        location: column
+        goDependency:
+          dependency: k8s.io/client-go
+
+  - owner: kcp-dev
+    name: kcp-operator
+    displayName: kcp Operator
+    releaseBranches:
+      pattern: release-\d\.\d+$
+      max: 3
+    pullRequests:
+      maxDisplay: 5
+    fields:
+      - id: go
+        label: Go
+        location: column
+        file:
+          paths:
+            - Dockerfile
+          filterCommand:
+            - /bin/sh
+            - /config/extract-dockerfile-image-tag.sh
+          allowedEnv: [PATH]
+      - id: kcp
+        label: kcp
+        location: column
+        file:
+          paths:
+            - internal/resources/resources.go
+          filterCommand:
+            - /bin/sh
+            - /config/kcp-operator-extract-kcp.sh
+          allowedEnv: [PATH]
+
+
+  - owner: kcp-dev
+    name: api-syncagent
+    displayName: API Sync Agent
+    releaseBranches:
+      pattern: release-\d\.\d+$
+      max: 3
+    pullRequests:
+      maxDisplay: 5
+    fields:
+      - id: go
+        label: Go
+        location: column
+        file:
+          paths:
+            - Dockerfile
+          filterCommand:
+            - /bin/sh
+            - /config/extract-dockerfile-image-tag.sh
+          allowedEnv: [PATH]
+
+  - owner: kcp-dev
+    name: init-agent
+    displayName: Init Agent
+    releaseBranches:
+      pattern: release-\d\.\d+$
+      max: 3
+    pullRequests:
+      maxDisplay: 5
+    fields:
+      - id: go
+        label: Go
+        location: column
+        file:
+          paths:
+            - Dockerfile
+          filterCommand:
+            - /bin/sh
+            - /config/extract-dockerfile-image-tag.sh
+          allowedEnv: [PATH]
+
+  - owner: kube-bind
+    name: kube-bind
+    displayName: kube-bind
+    releaseBranches:
+      pattern: release-\d\.\d+$
+      max: 3
+    pullRequests:
+      maxDisplay: 5
+    fields:
+      - id: go
+        label: Go
+        location: column
+        file:
+          paths:
+            - Dockerfile
+          filterCommand:
+            - /bin/sh
+            - /config/extract-dockerfile-image-tag.sh
+          allowedEnv: [PATH]
+          extraEnv: {IMAGE: golang}

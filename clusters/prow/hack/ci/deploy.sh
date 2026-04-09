@@ -65,6 +65,24 @@ kubectl replace --filename manifests/prowjob-crd.yaml
 echo "Installing Tide restarter..."
 kubectl apply --filename manifests/tide-restarter.yaml
 
+echo "Installing Sextant..."
+
+# Sextant relies on a sextant-github-token Secret that has to be created manually.
+kubectl apply --filename manifests/sextant.yaml
+
+# deploy the Sextant config
+(
+  cd manifests/sextant
+  kubectl --namespace release-branches create configmap sextant-config \
+    --from-file config.yaml \
+    --from-file extract-dockerfile-image-tag.sh \
+    --from-file kcp-operator-extract-kcp.sh \
+    --dry-run=client -o yaml | kubectl apply --filename -
+)
+
+# rotate Sextant to make the new config take effect
+kubectl --namespace release-branches rollout restart deployment sextant
+
 ###########################################################
 # ensure these deployments are scheduled on the stable nodes, so
 # that when zero workers are running, these essential services still
