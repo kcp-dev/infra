@@ -1,0 +1,147 @@
+#
+# This deploys https://codeberg.org/xrstf/sextant to generate a single HTML
+# file detailing the status of the various release branches for kcp repositories.
+#
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: release-branches
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sextant-cache
+  namespace: release-branches
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sextant
+  namespace: release-branches
+spec:
+  selector:
+    app: sextant
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sextant
+  namespace: release-branches
+  labels:
+    app: sextant
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sextant
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sextant
+    spec:
+      containers:
+        # The webserver that serves the generated HTML file.
+        - image: nginx:1.29.7-alpine
+          name: nginx
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 500m
+              memory: 64Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          volumeMounts:
+            - name: scratch
+              mountPath: /usr/share/nginx/html
+
+        # The sidecar that continuously updates the HTML file with the latest status of the release branches.
+        - image: codeberg.org/xrstf/sextant:0.5.3-alpine
+          name: sextant
+          command: [/bin/sh]
+          args:
+            - -c
+            - |
+              while true; do
+                sextant \
+                  --format html \
+                  --config /config/config.yaml \
+                  --cache-directory /cache > /scratch/index.html
+
+                sleep $SEXTANT_INTERVAL
+              done
+          env:
+            - name: SEXTANT_INTERVAL
+              value: 60m
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: sextant-github-token
+                  key: token
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: cache
+              mountPath: /cache
+            - name: scratch
+              mountPath: /scratch
+      volumes:
+        - name: config
+          configMap:
+            name: sextant-config
+        - name: cache
+          persistentVolumeClaim:
+            claimName: sextant-cache
+        - name: scratch
+          emptyDir: {}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sextant
+  namespace: release-branches
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: release-branches.kcp.k8c.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sextant
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - release-branches.kcp.k8c.io
+      secretName: sextant-tls
