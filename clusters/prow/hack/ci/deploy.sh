@@ -68,7 +68,7 @@ kubectl apply --filename manifests/tide-restarter.yaml
 echo "Installing Sextant..."
 
 # Sextant relies on a sextant-github-token Secret that has to be created manually.
-kubectl apply --filename manifests/sextant.yaml
+kubectl apply --filename manifests/release-branch-reporter.yaml
 
 # deploy the Sextant config
 (
