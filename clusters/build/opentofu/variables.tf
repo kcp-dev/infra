@@ -42,7 +42,7 @@ variable "cluster_autoscaler_max" {
 
 variable "kubernetes_version" {
   type    = string
-  default = "v1.33.1"
+  default = "v1.36.0"
 }
 
 variable "oci_config_file_profile" {
