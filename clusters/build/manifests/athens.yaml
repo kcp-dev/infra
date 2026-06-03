@@ -48,7 +48,7 @@ spec:
           operator: Exists
       containers:
         - name: athens
-          image: "gomods/athens:v0.15.4"
+          image: "docker.io/gomods/athens:v0.15.4"
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
