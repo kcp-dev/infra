@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>kcp-perf-results</title>
+<style>
+  :root {
+    --fg: #0f172a;
+    --muted: #64748b;
+    --link: #1e40af;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  #count, #refreshed {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  #tree {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+  }
+  details {
+    margin: 2px 0;
+  }
+  details > div, details > details {
+    margin-left: 18px;
+  }
+  summary {
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  summary:hover { background: var(--bg); }
+  summary::marker, summary::-webkit-details-marker { color: var(--muted); }
+  .file {
+    padding: 2px 4px 2px 18px;
+    border-radius: 4px;
+  }
+  .file:hover { background: var(--bg); }
+  .file a {
+    color: var(--link);
+    text-decoration: none;
+  }
+  .file a:hover { text-decoration: underline; }
+  .meta {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .empty, .error {
+    color: var(--muted);
+    padding: 24px;
+    text-align: center;
+  }
+  .error { color: #b91c1c; }
+  footer {
+    margin-top: 24px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+  footer code {
+    background: var(--card);
+    padding: 1px 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 id="title">…</h1>
+      <div>
+        <span id="count">loading…</span>
+        <span id="refreshed"></span>
+      </div>
+    </header>
+    <div id="tree"><div class="empty">Loading…</div></div>
+    <footer>
+      Browsable index generated from the OCI Object Storage listing API.
+      To upload, use the write-only PAR URL — see <code>UPLOADING.md</code> in the kcp infra repo.
+    </footer>
+  </div>
+
+<script>
+(async function () {
+  const u = new URL(window.location.href);
+  const m = u.pathname.match(/^\/n\/([^/]+)\/b\/([^/]+)\/o\//);
+  if (!m) {
+    document.getElementById('tree').innerHTML =
+      '<div class="error">Open this page via the bucket public-read URL (…/n/&lt;ns&gt;/b/&lt;bucket&gt;/o/index.html).</div>';
+    return;
+  }
+  const [, ns, bucket] = m;
+  const host = `${u.protocol}//${u.host}`;
+  const objectBase = `${host}/n/${ns}/b/${bucket}/o/`;
+  document.getElementById('title').textContent = bucket;
+
+  async function listAll() {
+    const all = [];
+    let start = '';
+    for (;;) {
+      const qs = new URLSearchParams({ limit: '1000', fields: 'name,size,timeCreated' });
+      if (start) qs.set('start', start);
+      const r = await fetch(`${host}/n/${ns}/b/${bucket}/o/?${qs}`);
+      if (!r.ok) throw new Error(`list failed: HTTP ${r.status}`);
+      const j = await r.json();
+      all.push(...(j.objects || []));
+      if (!j.nextStartWith) break;
+      start = j.nextStartWith;
+    }
+    return all;
+  }
+
+  function fmtSize(n) {
+    if (n == null) return '';
+    const u = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let i = 0;
+    while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+    return `${i === 0 ? n : n.toFixed(1)} ${u[i]}`;
+  }
+
+  function buildTree(objs) {
+    const root = { dirs: {}, files: [] };
+    for (const o of objs) {
+      if (o.name === 'index.html') continue;
+      const parts = o.name.split('/');
+      const file = parts.pop();
+      let node = root;
+      for (const p of parts) {
+        if (!node.dirs[p]) node.dirs[p] = { dirs: {}, files: [] };
+        node = node.dirs[p];
+      }
+      node.files.push({ name: file, size: o.size, timeCreated: o.timeCreated, key: o.name });
+    }
+    return root;
+  }
+
+  function render(node, parentPath, depth) {
+    const wrap = document.createDocumentFragment();
+    const dirNames = Object.keys(node.dirs).sort();
+    for (const name of dirNames) {
+      const d = document.createElement('details');
+      if (depth < 1) d.open = true;
+      const s = document.createElement('summary');
+      const count = countLeaves(node.dirs[name]);
+      s.textContent = `📁 ${name}/ `;
+      const c = document.createElement('span');
+      c.className = 'meta';
+      c.textContent = `(${count})`;
+      s.appendChild(c);
+      d.appendChild(s);
+      d.appendChild(render(node.dirs[name], `${parentPath}${name}/`, depth + 1));
+      wrap.appendChild(d);
+    }
+    for (const f of node.files.sort((a, b) => a.name.localeCompare(b.name))) {
+      const row = document.createElement('div');
+      row.className = 'file';
+      const a = document.createElement('a');
+      a.href = objectBase + parentPath + encodeURI(f.name);
+      a.textContent = `📄 ${f.name}`;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      const meta = document.createElement('span');
+      meta.className = 'meta';
+      const ts = (f.timeCreated || '').replace('T', ' ').replace(/\.\d+Z$/, 'Z');
+      meta.textContent = `  ${fmtSize(f.size)} · ${ts}`;
+      row.appendChild(a);
+      row.appendChild(meta);
+      wrap.appendChild(row);
+    }
+    return wrap;
+  }
+
+  function countLeaves(node) {
+    let n = node.files.length;
+    for (const d of Object.values(node.dirs)) n += countLeaves(d);
+    return n;
+  }
+
+  try {
+    const objs = await listAll();
+    const visible = objs.filter(o => o.name !== 'index.html');
+    document.getElementById('count').textContent =
+      `${visible.length} object${visible.length === 1 ? '' : 's'} · `;
+    document.getElementById('refreshed').textContent =
+      `refreshed ${new Date().toISOString().replace('T', ' ').replace(/\.\d+Z$/, 'Z')}`;
+    const tree = buildTree(objs);
+    const out = document.getElementById('tree');
+    out.replaceChildren();
+    if (!visible.length) {
+      out.innerHTML = '<div class="empty">No objects yet. Upload one with the PAR URL.</div>';
+    } else {
+      out.appendChild(render(tree, '', 0));
+    }
+  } catch (e) {
+    document.getElementById('tree').innerHTML =
+      `<div class="error">Failed to list bucket: ${e.message}</div>`;
+  }
+})();
+</script>
+</body>
+</html>
