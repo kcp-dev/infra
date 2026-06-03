@@ -23,7 +23,7 @@ metadata:
   name: athens
   namespace: athens
 spec:
-  replicas: 1
+  replicas: 3
   strategy:
     # We have only one volume, so only one pod can run at a time
     type: Recreate
@@ -48,7 +48,7 @@ spec:
           operator: Exists
       containers:
         - name: athens
-          image: "docker.io/gomods/athens:v0.15.4"
+          image: "gomods/athens:v0.15.4"
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
