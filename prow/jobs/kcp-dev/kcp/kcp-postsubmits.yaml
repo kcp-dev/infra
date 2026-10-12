@@ -22,3 +22,33 @@ postsubmits:
               requests:
                 cpu: 2
                 memory: 3Gi
+
+    - name: post-kcp-publish-image-sharded-test-server
+      decorate: true
+      clone_uri: "https://github.com/kcp-dev/kcp"
+      cluster: prow # GHCR credentials are only available here
+      labels:
+        preset-ghcr-credentials: "true"
+      branches:
+        - ^main$
+        - ^release-.*
+        - ^v\d+\..*
+      spec:
+        containers:
+          - image: quay.io/containers/buildah:v1.30.0
+            command:
+              - hack/build-image.sh
+            env:
+              - name: IMAGE_REPOSITORY
+                value: "ghcr.io/kcp-dev/kcp-sharded-test-server"
+              - name: DOCKERFILE
+                value: "cmd/sharded-test-server/Dockerfile"
+              - name: IGNOREFILE
+                value: "cmd/sharded-test-server/Dockerfile.dockerignore"
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                cpu: 2
+                memory: 3Gi
