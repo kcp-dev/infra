@@ -21,6 +21,7 @@ plank:
     "kcp-dev/code-generator": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/controller-runtime": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/controller-runtime-example": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
+    "kcp-dev/embeddedetcd": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/enhancements": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/friends": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
     "kcp-dev/helm-charts": "[Full PR test history](https://public-prow.kcp.k8c.io/pr-history?org={{.Spec.Refs.Org}}&repo={{.Spec.Refs.Repo}}&pr={{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}})"
@@ -44,6 +45,7 @@ plank:
     "kcp-dev/code-generator": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/controller-runtime": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/controller-runtime-example": "https://public-prow.kcp.k8c.io/view/"
+    "kcp-dev/embeddedetcd": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/enhancements": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/friends": "https://public-prow.kcp.k8c.io/view/"
     "kcp-dev/helm-charts": "https://public-prow.kcp.k8c.io/view/"
@@ -112,6 +114,11 @@ plank:
         gcs_configuration:
           bucket: "s3://prow-public-data"
     - repo: "kcp-dev/controller-runtime-example"
+      config:
+        s3_credentials_secret: "s3-credentials-public"
+        gcs_configuration:
+          bucket: "s3://prow-public-data"
+    - repo: "kcp-dev/embeddedetcd"
       config:
         s3_credentials_secret: "s3-credentials-public"
         gcs_configuration:
@@ -215,6 +222,7 @@ deck:
       'kcp-dev/code-generator': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/controller-runtime': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/controller-runtime-example': https://public-gcsweb.kcp.k8c.io/s3/
+      'kcp-dev/embeddedetcd': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/enhancements': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/friends': https://public-gcsweb.kcp.k8c.io/s3/
       'kcp-dev/helm-charts': https://public-gcsweb.kcp.k8c.io/s3/
@@ -295,6 +303,7 @@ tide:
         - kcp-dev/code-generator
         - kcp-dev/controller-runtime
         - kcp-dev/controller-runtime-example
+        - kcp-dev/embeddedetcd
         - kcp-dev/enhancements
         - kcp-dev/friends
         - kcp-dev/helm-charts
@@ -387,6 +396,17 @@ branch-protection:
           include:
             - "^main$"
         infra:
+          protect: true
+          required_status_checks:
+            contexts:
+              - dco
+          restrictions:
+            users: []
+            teams:
+              - kcp-dev/kcp-admins
+          include:
+            - "^main$"
+        embeddedetcd:
           protect: true
           required_status_checks:
             contexts:
