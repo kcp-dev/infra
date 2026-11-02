@@ -33,11 +33,11 @@ resource "oci_containerengine_node_pool" "prow_worker" {
   name               = "prow-worker"
   ssh_public_key     = var.node_pool_ssh_public_key
 
-  # this matches t3.xlarge sizings.
+  # roughly m6g.4xlarge sizing (16 OCPU / 64 GB)
   node_shape = "VM.Standard.A1.Flex"
   node_shape_config {
-    memory_in_gbs = 16
-    ocpus         = 8
+    memory_in_gbs = 64
+    ocpus         = 16
   }
 
 
