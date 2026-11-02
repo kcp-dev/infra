@@ -1,0 +1,16 @@
+# Prow test pods run untrusted PR code in the same cluster. Only pods inside
+# the monitoring namespace may talk to Prometheus, Grafana, Loki and Alloy.
+# Humans reach them with `kubectl port-forward`, which goes through the
+# kubelet and is not affected by this policy.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-namespace-only
+  namespace: monitoring
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}

@@ -1,0 +1,69 @@
+# Logs for the build cluster: a single Loki instance on a block volume.
+# Logs are shipped by Grafana Alloy (see alloy.yaml) and queried via Grafana.
+
+deploymentMode: SingleBinary
+
+loki:
+  # single tenant, the API is only reachable from inside the monitoring namespace
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: filesystem
+  schemaConfig:
+    configs:
+      - from: "2026-11-01"
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+  limits_config:
+    retention_period: 336h # 14 days
+    ingestion_rate_mb: 16
+    ingestion_burst_size_mb: 32
+    max_query_lookback: 336h
+  compactor:
+    retention_enabled: true
+    delete_request_store: filesystem
+  pattern_ingester:
+    enabled: false
+  ui:
+    enabled: false
+
+singleBinary:
+  replicas: 1
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      memory: 2Gi
+  persistence:
+    enabled: true
+    # OCI block volumes are at least 50GB
+    size: 100Gi
+    # keep the logs when the release is removed
+    whenDeleted: Retain
+    whenScaled: Retain
+
+# everything below is for the scalable/distributed modes or extras we don't need
+gateway:
+  enabled: false
+read:
+  replicas: 0
+write:
+  replicas: 0
+backend:
+  replicas: 0
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false
+lokiCanary:
+  enabled: false
+test:
+  enabled: false
