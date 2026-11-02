@@ -6,8 +6,11 @@ metadata:
 data:
   DOCKER_REGISTRY_MIRROR_ADDR: http://registry-mirror.registry.svc.cluster.local:5001
 
-  # It would be nice if we could avoid ",direct", but there are just too
-  # many occasions where upstream has issues and fixing those is often not
-  # easy. Instead of blocking us from progessing, we'd rather go uncached
-  # for some of our dependencies when needed.
-  GOPROXY: http://athens-proxy.athens.svc.cluster.local,direct
+  # It would be nice if we could avoid falling back to "direct", but there
+  # are just too many occasions where upstream has issues and fixing those
+  # is often not easy. Instead of blocking us from progessing, we'd rather
+  # go uncached for some of our dependencies when needed.
+  # Note the "|" separator: with "," Go only falls back on 404/410, so any
+  # Athens downtime (e.g. a pod restart, connection refused) fails the job.
+  # "|" falls back on any error.
+  GOPROXY: http://athens-proxy.athens.svc.cluster.local|direct
