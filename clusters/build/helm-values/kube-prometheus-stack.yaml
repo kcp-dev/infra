@@ -1,0 +1,138 @@
+# Metrics for the build cluster: Prometheus, Grafana, node-exporter and
+# kube-state-metrics. Nothing in here is exposed outside the cluster; see the
+# README for how to reach Grafana and Prometheus via port-forwarding.
+
+# Nobody is paged from this cluster; the recording/alerting rules are still
+# useful in the Prometheus UI.
+alertmanager:
+  enabled: false
+
+# OKE runs a managed control plane, these components cannot be scraped.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false
+
+defaultRules:
+  rules:
+    etcd: false
+    kubeControllerManager: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeProxy: false
+
+prometheusOperator:
+  # The API server would need to reach the operator for the webhook, which
+  # the monitoring NetworkPolicy does not allow. CRs are validated by the
+  # operator when it reconciles them instead.
+  admissionWebhooks:
+    enabled: false
+  # The operator's TLS cert comes from the admission webhook's cert job; with
+  # the webhook disabled that Secret never exists and the operator pod would
+  # hang in ContainerCreating. Metrics are scraped over plain HTTP instead.
+  tls:
+    enabled: false
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+
+prometheus:
+  prometheusSpec:
+    scrapeInterval: 30s
+    retention: 15d
+    # stay below the volume size so Prometheus never fills the disk
+    retentionSize: 85GB
+    walCompression: true
+    # pick up ServiceMonitors/PodMonitors/rules from any release, not just this one
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    podMetadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        memory: 4Gi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              # OCI block volumes are at least 50GB
+              storage: 100Gi
+
+kube-state-metrics:
+  # Expose the Prow labels on kube_pod_labels, so container/node metrics can be
+  # joined to the job, PR and build that a pod belongs to.
+  metricLabelsAllowlist:
+    - pods=[prow.k8s.io/job,prow.k8s.io/type,prow.k8s.io/refs.org,prow.k8s.io/refs.repo,prow.k8s.io/refs.pull,prow.k8s.io/build-id]
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 128Mi
+
+grafana:
+  admin:
+    # created by hack/ci/deploy.sh, never overwritten
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
+  testFramework:
+    enabled: false
+  ingress:
+    enabled: false
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: true
+    size: 50Gi
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  grafana.ini:
+    analytics:
+      reporting_enabled: false
+      check_for_updates: false
+    auth.anonymous:
+      enabled: false
+    users:
+      allow_sign_up: false
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      access: proxy
+      url: http://loki.monitoring.svc.cluster.local:3100
+      jsonData:
+        maxLines: 5000

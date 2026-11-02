@@ -1,0 +1,148 @@
+# Grafana Alloy runs on every node and ships two things to Loki:
+#  - container logs from /var/log/pods, labelled with the Prow job, PR and
+#    build ID of the pod they belong to
+#  - the node's systemd journal (kubelet, containerd, kernel: OOM kills,
+#    hung tasks, disk errors)
+
+alloy:
+  enableReporting: false
+  storagePath: /var/lib/alloy/data
+  extraEnv:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+  mounts:
+    varlog: true
+    extra:
+      - name: alloy-data
+        mountPath: /var/lib/alloy
+      - name: run-journal
+        mountPath: /run/log/journal
+        readOnly: true
+      - name: machine-id
+        mountPath: /etc/machine-id
+        readOnly: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  configMap:
+    content: |
+      discovery.kubernetes "pods" {
+        role = "pod"
+        selectors {
+          role  = "pod"
+          field = "spec.nodeName=" + sys.env("NODE_NAME")
+        }
+      }
+
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.pods.targets
+
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_node_name"]
+          target_label  = "node"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_prow_k8s_io_job"]
+          target_label  = "prow_job"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_prow_k8s_io_refs_repo"]
+          target_label  = "repo"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_prow_k8s_io_refs_pull"]
+          target_label  = "pull"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_prow_k8s_io_build_id"]
+          target_label  = "build_id"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
+          separator     = "/"
+          target_label  = "__path__"
+          replacement   = "/var/log/pods/*$1/*.log"
+        }
+      }
+
+      local.file_match "pod_logs" {
+        path_targets = discovery.relabel.pod_logs.output
+      }
+
+      loki.source.file "pod_logs" {
+        targets    = local.file_match.pod_logs.targets
+        forward_to = [loki.process.pod_logs.receiver]
+      }
+
+      loki.process "pod_logs" {
+        stage.cri {}
+        forward_to = [loki.write.default.receiver]
+      }
+
+      loki.relabel "journal" {
+        forward_to = []
+
+        rule {
+          source_labels = ["__journal__systemd_unit"]
+          target_label  = "unit"
+        }
+        rule {
+          source_labels = ["__journal_priority_keyword"]
+          target_label  = "level"
+        }
+      }
+
+      loki.source.journal "node" {
+        max_age       = "12h"
+        relabel_rules = loki.relabel.journal.rules
+        labels        = {
+          job  = "node/journal",
+          node = sys.env("NODE_NAME"),
+        }
+        forward_to    = [loki.write.default.receiver]
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+        }
+      }
+
+controller:
+  type: daemonset
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  # run on every node, whatever it is tainted with
+  tolerations:
+    - operator: Exists
+  volumes:
+    extra:
+      - name: alloy-data
+        hostPath:
+          path: /var/lib/alloy
+          type: DirectoryOrCreate
+      - name: run-journal
+        hostPath:
+          path: /run/log/journal
+          type: DirectoryOrCreate
+      - name: machine-id
+        hostPath:
+          path: /etc/machine-id
+          type: File

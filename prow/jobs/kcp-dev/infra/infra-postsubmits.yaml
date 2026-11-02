@@ -42,6 +42,27 @@ postsubmits:
               - name: KUBE_CONTEXT
                 value: default
 
+    - name: post-infra-deploy-build-cluster-monitoring
+      max_concurrency: 1
+      run_if_changed: "clusters/build/(helm-values/|manifests/monitoring-|hack/ci/deploy-monitoring.sh|hack/settings.sh|hack/lib.sh)"
+      decorate: true
+      cluster: prow
+      clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
+      labels:
+        preset-prow-kubeconfig: "true"
+      branches:
+        - ^main$
+      spec:
+        containers:
+          - image: quay.io/kubermatic/build:go-1.20-node-18-6
+            command:
+              - clusters/build/hack/ci/deploy-monitoring.sh
+            env:
+              - name: KUBECONFIG
+                value: /etc/prow/kubeconfig/kubeconfig
+              - name: KUBE_CONTEXT
+                value: default
+
     - name: post-infra-publish-images-1.23-build
       decorate: true
       clone_uri: "ssh://git@github.com/kcp-dev/infra.git"
