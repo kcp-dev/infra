@@ -85,7 +85,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: deck
-          image: us-docker.pkg.dev/k8s-infra-prow/images/deck:v20260113-898377d8b
+          image: us-docker.pkg.dev/k8s-infra-prow/images/deck:v20261107-d4aa52fd2
           imagePullPolicy: Always
           args:
             - --tide-url=http://tide/
