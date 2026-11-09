@@ -37,7 +37,7 @@ for progname in commenter label_sync gcsweb; do
   echo "Latest $progname version: $latestVersion"
 
   # search the _entire_ repository to also catch the .prow.yaml
-  find .. -name '*.yaml' -exec sed -i -E "s#k8s-staging-test-infra/$progname:[0-9a-z-]+#k8s-staging-test-infra/$progname:$latestVersion#g" {} \;
+  find ../../ -name '*.yaml' -exec sed -i -E "s#k8s-staging-test-infra/$progname:[0-9a-z-]+#k8s-staging-test-infra/$progname:$latestVersion#g" {} \;
 done
 
 echo "Files updated, you can commit now. Good luck! :)"

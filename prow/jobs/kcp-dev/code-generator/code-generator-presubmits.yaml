@@ -12,7 +12,7 @@ presubmits:
           clone_uri: git@github.com:kcp-dev/infra.git
       spec:
         containers:
-          - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260113-898377d8b
+          - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20261107-d4aa52fd2
             command:
               - checkconfig
             args:

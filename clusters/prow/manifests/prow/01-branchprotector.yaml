@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
             - name: branchprotector
-              image: us-docker.pkg.dev/k8s-infra-prow/images/branchprotector:v20260113-898377d8b
+              image: us-docker.pkg.dev/k8s-infra-prow/images/branchprotector:v20261107-d4aa52fd2
               args:
                 - -config-path=/etc/config/config.yaml
                 - -job-config-path=/etc/job-config
