@@ -17,6 +17,15 @@ kubeEtcd:
 kubeProxy:
   enabled: false
 
+crds:
+  enabled: true
+  ## The CRD upgrade job mitigates the limitation of helm not being able to upgrade CRDs.
+  ## The job will apply the CRDs to the cluster before the operator is deployed, using helm hooks.
+  ## It deploys a corresponding clusterrole, clusterrolebinding and serviceaccount to apply the CRDs.
+  ## This feature is in preview, off by default and may change in the future.
+  upgradeJob:
+    enabled: true # enabled because we upgraded from 92.x to 93.x and this needs prom-operator CRD upgrades
+
 defaultRules:
   rules:
     etcd: false
