@@ -12,7 +12,7 @@ postsubmits:
         - ^main$
       spec:
         containers:
-          - image: quay.io/kubermatic/build:go-1.20-node-18-6
+          - image: ghcr.io/kcp-dev/infra/build:1.26.10-1
             command:
               - clusters/prow/hack/ci/deploy.sh
             env:
@@ -33,7 +33,7 @@ postsubmits:
         - ^main$
       spec:
         containers:
-          - image: quay.io/kubermatic/build:go-1.20-node-18-6
+          - image: ghcr.io/kcp-dev/infra/build:1.26.10-1
             command:
               - clusters/build/hack/ci/deploy.sh
             env:
@@ -54,7 +54,7 @@ postsubmits:
         - ^main$
       spec:
         containers:
-          - image: quay.io/kubermatic/build:go-1.20-node-18-6
+          - image: ghcr.io/kcp-dev/infra/build:1.26.10-1
             command:
               - clusters/build/hack/ci/deploy-monitoring.sh
             env:

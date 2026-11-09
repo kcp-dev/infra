@@ -46,6 +46,6 @@ periodics:
       serviceAccountName: registry-cleaner
       containers:
         - name: registry-cleaner
-          image: quay.io/kubermatic/build:go-1.22-node-20-18
+          image: ghcr.io/kcp-dev/infra/build:1.26.10-1
           command:
             - ./clusters/build/hack/ci/clean-up-registry-mirror.sh
