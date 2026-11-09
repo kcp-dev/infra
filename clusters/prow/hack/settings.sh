@@ -6,5 +6,5 @@ PROW_NAMESPACE=prow
 # namespace in which Prow jobs will be running
 PROW_TESTPOD_NAMESPACE=default
 # These are _Helm chart_ versions, not application versions!
-CERT_MANAGER_VERSION=1.10.1
+CERT_MANAGER_VERSION=1.21.3
 INGRESS_NGINX_VERSION=4.4.2
